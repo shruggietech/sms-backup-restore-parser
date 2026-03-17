@@ -1,0 +1,44 @@
+## Context
+
+Sprint: 20260317-002-Updates
+Project: sms-backup-restore-parser
+Target Release: v0.1.0
+
+## Active Section
+
+Section [N]: [Section Title]
+
+## Key References
+
+- Sprint plan: .handoff/plans/20260317-002-Updates.md
+- Technical specification: reference/knowledge-base.md
+- CHANGELOG.md: CHANGELOG.md
+- pyproject.toml: pyproject.toml
+- Build script: scripts/build.py
+- JSON Schema: sms-backup-restore.schema.json
+- CLAUDE.md: CLAUDE.md
+
+## Instructions
+
+You are implementing Section [N] of sprint 20260317-002-Updates.
+
+Read the sprint plan at `.handoff/plans/20260317-002-Updates.md` and execute the implementation instructions for Section [N]. Follow the affected files table and acceptance criteria precisely.
+
+Before making changes:
+1. Read each affected file to understand its current state.
+2. Verify the preconditions stated in the Implementation Ordering section.
+3. Make targeted, scoped edits. Do not restructure files beyond what the sprint section requires.
+
+After making changes:
+1. Verify each acceptance criterion listed for the section.
+2. If this is Section 2 (changelog and metadata freeze), write the commit message as specified.
+3. Sections 1 and 5 are verification-only and produce no commits.
+4. Sections 3 and 4 involve build and release operations, not code changes.
+
+## Constraints
+
+- UTF-8 encoding without BOM on all files.
+- Do not modify files outside the Affected Files table unless explicitly instructed.
+- If an acceptance criterion cannot be met, stop and report the blocker.
+- Binaries in dist/ are NOT committed to the repository.
+- The git tag MUST be annotated (not lightweight).
