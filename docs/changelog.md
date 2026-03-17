@@ -33,9 +33,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - `[project.urls]` in `pyproject.toml` (homepage, repository, issues, changelog)
 
 ### Changed
+- **Spec: Technical specification revision** — Expanded `reference/knowledge-base.md` from a flat XML format reference into a full technical specification with numbered sections, front matter, ToC, parser architecture, CLI interface, report types, repository layout, and documentation site configuration. Spec: §1–§15.
+- **Docs: MkDocs configuration alignment** — Updated `mkdocs.yml` with slate theme, navigation features, search highlighting, content tabs, and required Markdown extensions to match ShruggieTech conventions. Spec: §15.1.
+- **Docs: pyproject.toml docs dependency group** — Added `docs` optional dependency group for `mkdocs` and `mkdocs-material`. Spec: §15.6.
 - Normalized `repo_url` casing in `mkdocs.yml` to match canonical GitHub URL
-- **pyproject.toml**: Added `docs` optional dependency group (`mkdocs>=1.6`, `mkdocs-material>=9.5`) for documentation toolchain
-- **Docs: MkDocs configuration alignment** — Updated `mkdocs.yml` with slate theme, navigation tabs/instant, search highlighting, content tabs, admonition/superfences extensions, `site_url`, and nav entries for XML Format Reference and Changelog pages
 
 ### Fixed
 - **pyproject.toml**: Moved `classifiers` from under `[project.urls]` to `[project]` where it belongs (was causing `pip install -e` to fail)
