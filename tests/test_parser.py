@@ -153,3 +153,86 @@ class TestParseOutputDir:
         assert len(result["output_files"]) == 1
         from pathlib import Path
         assert Path(result["output_files"][0]).parent == subdir
+
+
+class TestParseMultiFileCombined:
+    """Multi-file combined mode merges all records into one output."""
+
+    def test_single_output_file(self, minimal_sms_xml, minimal_calls_xml, tmp_path):
+        from sms_backup_parser.parser import parse_backup_multi
+        result = parse_backup_multi(
+            [minimal_sms_xml, minimal_calls_xml], output_dir=tmp_path
+        )
+        assert len(result["output_files"]) == 1
+
+    def test_merged_counts(self, minimal_sms_xml, minimal_calls_xml, tmp_path):
+        from sms_backup_parser.parser import parse_backup_multi
+        result = parse_backup_multi(
+            [minimal_sms_xml, minimal_calls_xml], output_dir=tmp_path
+        )
+        assert result["sms_count"] == 1
+        assert result["call_count"] == 1
+
+    def test_merged_json_structure(self, minimal_sms_xml, minimal_calls_xml, tmp_path):
+        from sms_backup_parser.parser import parse_backup_multi
+        result = parse_backup_multi(
+            [minimal_sms_xml, minimal_calls_xml], output_dir=tmp_path
+        )
+        data = _load_json(result["output_files"][0])
+        assert len(data["sms"]) == 1
+        assert len(data["calls"]) == 1
+        assert len(data["mms"]) == 0
+
+    def test_all_three_types_merged(self, minimal_sms_xml, minimal_mms_xml,
+                                     minimal_calls_xml, tmp_path):
+        from sms_backup_parser.parser import parse_backup_multi
+        result = parse_backup_multi(
+            [minimal_sms_xml, minimal_mms_xml, minimal_calls_xml],
+            output_dir=tmp_path,
+        )
+        data = _load_json(result["output_files"][0])
+        assert len(data["sms"]) == 1
+        assert len(data["mms"]) == 1
+        assert len(data["calls"]) == 1
+
+    def test_output_uses_first_file_stem(self, minimal_sms_xml, minimal_calls_xml, tmp_path):
+        from sms_backup_parser.parser import parse_backup_multi
+        result = parse_backup_multi(
+            [minimal_sms_xml, minimal_calls_xml], output_dir=tmp_path
+        )
+        from pathlib import Path
+        assert Path(result["output_files"][0]).stem == minimal_sms_xml.stem
+
+    def test_file_not_found_raises(self, minimal_sms_xml, tmp_path):
+        from sms_backup_parser.parser import parse_backup_multi
+        with pytest.raises(FileNotFoundError):
+            parse_backup_multi(
+                [minimal_sms_xml, tmp_path / "nonexistent.xml"],
+                output_dir=tmp_path,
+            )
+
+    def test_compact_output(self, minimal_sms_xml, minimal_calls_xml, tmp_path):
+        from sms_backup_parser.parser import parse_backup_multi
+        result = parse_backup_multi(
+            [minimal_sms_xml, minimal_calls_xml], output_dir=tmp_path, indent=None
+        )
+        content = open(result["output_files"][0], encoding='utf-8').read()
+        assert "    " not in content
+
+
+class TestParseCompactOutput:
+    """Verify compact (indent=None) output produces minimal whitespace."""
+
+    def test_compact_combined(self, minimal_sms_xml, tmp_path):
+        result = parse_backup(
+            minimal_sms_xml, output_dir=tmp_path, combined=True, indent=None
+        )
+        content = open(result["output_files"][0], encoding='utf-8').read()
+        assert "    " not in content
+
+    def test_compact_separate(self, minimal_sms_xml, tmp_path):
+        result = parse_backup(
+            minimal_sms_xml, output_dir=tmp_path, indent=None
+        )
+        content = open(result["output_files"][0], encoding='utf-8').read()
+        assert "    " not in content

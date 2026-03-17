@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sms-backup-restore-parser"
-version = "0.1.0"
+version = "0.1.1"
 description = "CLI utility for parsing SyncTech SMS Backup & Restore XML exports into structured JSON with built-in analytical reports."
 requires-python = ">=3.12"
 license = "Apache-2.0"

@@ -20,6 +20,15 @@ ENTRY_POINT = SRC_DIR / "sms_backup_parser" / "__main__.py"
 
 
 def build():
+    # Ensure all optional dependencies are installed for a full-featured binary
+    extras_cmd = [sys.executable, "-m", "pip", "install", "-q",
+                  str(PROJECT_ROOT) + "[validate]"]
+    print("Installing optional dependencies for full-featured build...")
+    extras_result = subprocess.run(extras_cmd)
+    if extras_result.returncode != 0:
+        print("Warning: Failed to install [validate] extra. "
+              "The binary may not support --validate.", file=sys.stderr)
+
     system = platform.system().lower()
     exe_name = "sms-backup-parser.exe" if system == "windows" else "sms-backup-parser"
 
@@ -36,6 +45,7 @@ def build():
         f"--add-data={SCHEMA_FILE}{sep}.",
         "--paths", str(SRC_DIR),
         "--clean",
+        "--hidden-import=jsonschema",
         str(ENTRY_POINT),
     ]
 

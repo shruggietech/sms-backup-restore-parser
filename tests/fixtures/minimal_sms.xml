@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<smses count="1">
+  <sms protocol="0" address="+15551234567" date="1609459200000" type="1" subject="null" body="Happy New Year! This is a test message." toa="null" sc_toa="null" service_center="+15559876543" read="1" status="-1" locked="0" date_sent="1609459190000" sub_id="1" readable_date="Jan 1, 2021 12:00:00 AM" contact_name="Alice Smith" />
+</smses>

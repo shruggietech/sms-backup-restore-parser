@@ -47,3 +47,4 @@ site/
 
 # Project-specific: real backup exports (contain PII)
 *.xml
+!tests/fixtures/*.xml

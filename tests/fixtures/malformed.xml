@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<smses count="1">
+  <sms protocol="0" address="+15551234567" date="bad" type="1" body="This is fine"
+  <!-- Missing closing tag and bracket -->

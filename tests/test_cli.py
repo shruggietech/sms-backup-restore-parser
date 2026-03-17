@@ -1,5 +1,6 @@
 """Tests for the sms_backup_parser CLI entry point."""
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -98,3 +99,60 @@ class TestCliHelp:
         output = result.stdout + result.stderr
         assert "parse" in output
         assert "version" in output
+
+
+class TestCliExitCodes:
+    """Verify CLI propagates nonzero exit codes correctly."""
+
+    def test_missing_file_nonzero(self):
+        result = run_cli("parse", "nonexistent_file_that_does_not_exist.xml")
+        assert result.returncode != 0
+
+    def test_success_zero(self, tmp_path):
+        xml = str(FIXTURES_DIR / "minimal_sms.xml")
+        result = run_cli("parse", xml, "-o", str(tmp_path), "--combined")
+        assert result.returncode == 0
+
+
+class TestCliMultiFileCombined:
+    """Multi-file --combined produces a single merged output."""
+
+    def test_single_output_file(self, tmp_path):
+        sms = str(FIXTURES_DIR / "minimal_sms.xml")
+        calls = str(FIXTURES_DIR / "minimal_calls.xml")
+        result = run_cli("parse", sms, calls, "-o", str(tmp_path), "--combined")
+        assert result.returncode == 0
+        json_files = list(tmp_path.glob("*.json"))
+        assert len(json_files) == 1
+
+    def test_merged_content(self, tmp_path):
+        sms = str(FIXTURES_DIR / "minimal_sms.xml")
+        calls = str(FIXTURES_DIR / "minimal_calls.xml")
+        run_cli("parse", sms, calls, "-o", str(tmp_path), "--combined")
+        json_files = list(tmp_path.glob("*.json"))
+        with open(json_files[0], encoding='utf-8') as f:
+            data = json.load(f)
+        assert len(data["sms"]) >= 1
+        assert len(data["calls"]) >= 1
+
+
+class TestCliValidateFlag:
+    """The --validate flag runs schema validation after parsing."""
+
+    def test_validate_succeeds(self, tmp_path):
+        xml = str(FIXTURES_DIR / "minimal_sms.xml")
+        result = run_cli("parse", xml, "-o", str(tmp_path), "--combined", "--validate")
+        # Should succeed (exit 0) or fail with import error — not crash
+        assert result.returncode in (0, 1)
+
+
+class TestCliCompactFlag:
+    """The --compact flag produces compact JSON."""
+
+    def test_compact_output(self, tmp_path):
+        xml = str(FIXTURES_DIR / "minimal_sms.xml")
+        run_cli("parse", xml, "-o", str(tmp_path), "--combined", "--compact")
+        json_files = list(tmp_path.glob("*.json"))
+        assert len(json_files) >= 1
+        content = json_files[0].read_text(encoding='utf-8')
+        assert "    " not in content

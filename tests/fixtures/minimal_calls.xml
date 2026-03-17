@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<calls count="1">
+  <call number="+15551234567" duration="125" date="1609632000000" type="1" presentation="1" subscription_id="1" readable_date="Jan 3, 2021 12:00:00 AM" contact_name="Alice Smith" />
+</calls>

@@ -236,8 +236,6 @@ def build_parser():
 
 def cmd_parse(args):
     """Execute the 'parse' subcommand."""
-    from .parser import parse_backup
-    from .progress import ProgressTracker
 
     # Validate all input files exist before starting any work
     input_paths = []
@@ -267,30 +265,66 @@ def cmd_parse(args):
     total_counts = {"sms": 0, "mms": 0, "call": 0}
     all_output_files = []
 
-    for input_path in input_paths:
+    if args.combined and len(input_paths) > 1:
+        # Multi-file combined: merge all inputs into one output
+        from .parser import parse_backup_multi
+        from .progress import ProgressTracker
+
+        output_dir = args.output_dir or str(input_paths[0].parent)
+
+        def tracker_factory():
+            return ProgressTracker(verbosity=verbosity)
+
         if verbosity >= 1:
-            print(f"Parsing {input_path}...", file=sys.stderr)
+            print(f"Parsing {len(input_paths)} files into combined output...",
+                  file=sys.stderr)
 
-        tracker = ProgressTracker(verbosity=verbosity)
-
-        result = parse_backup(
-            input_path=input_path,
-            output_dir=args.output_dir,
-            combined=args.combined,
+        result = parse_backup_multi(
+            input_paths=input_paths,
+            output_dir=output_dir,
             strip_media=args.strip_media,
             inject_date_iso=inject_date_iso,
             indent=indent,
-            progress_tracker=tracker,
+            progress_tracker_factory=tracker_factory,
         )
 
-        total_counts["sms"] += result["sms_count"]
-        total_counts["mms"] += result["mms_count"]
-        total_counts["call"] += result["call_count"]
+        total_counts["sms"] = result["sms_count"]
+        total_counts["mms"] = result["mms_count"]
+        total_counts["call"] = result["call_count"]
         all_output_files.extend(result["output_files"])
 
         if verbosity >= 2:
             for f in result["output_files"]:
                 print(f"  Wrote: {f}", file=sys.stderr)
+    else:
+        # Single file (combined or separate) or multi-file separate
+        from .parser import parse_backup
+        from .progress import ProgressTracker
+
+        for input_path in input_paths:
+            if verbosity >= 1:
+                print(f"Parsing {input_path}...", file=sys.stderr)
+
+            tracker = ProgressTracker(verbosity=verbosity)
+
+            result = parse_backup(
+                input_path=input_path,
+                output_dir=args.output_dir,
+                combined=args.combined,
+                strip_media=args.strip_media,
+                inject_date_iso=inject_date_iso,
+                indent=indent,
+                progress_tracker=tracker,
+            )
+
+            total_counts["sms"] += result["sms_count"]
+            total_counts["mms"] += result["mms_count"]
+            total_counts["call"] += result["call_count"]
+            all_output_files.extend(result["output_files"])
+
+            if verbosity >= 2:
+                for f in result["output_files"]:
+                    print(f"  Wrote: {f}", file=sys.stderr)
 
     # Schema validation pass
     if args.validate:

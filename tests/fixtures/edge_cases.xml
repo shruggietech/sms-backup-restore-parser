@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<smses count="4">
+  <sms protocol="0" address="+15551112222" date="1609459200000" type="1" body="Minimal fields, no optionals." read="1" status="-1" toa="null" sc_toa="null" />
+  <sms protocol="0" address="+15553334444" date="1609462800000" type="2" subject="null" body="Hello &#x1F30D; &#x2014; this has &#xAB;special&#xBB; chars &amp; symbols &lt; &gt; &quot; '" toa="null" sc_toa="null" service_center="null" read="1" status="-1" locked="0" date_sent="1609462800000" sub_id="1" readable_date="Jan 1, 2021 1:00:00 AM" contact_name="Charlie Unicode" />
+  <sms protocol="0" address="+15555556666" date="1609466400000" type="1" subject="null" body="" toa="null" sc_toa="null" service_center="+15559876543" read="0" status="-1" locked="0" date_sent="1609466390000" sub_id="1" readable_date="Jan 1, 2021 2:00:00 AM" contact_name="Dana Empty" />
+  <mms date="1609470000000" ct_t="application/vnd.wap.multipart.mixed" msg_box="1" rr="129" sub="null" read_status="null" address="+15557778888" m_id="message003@example.com" read="1" m_size="0" m_type="132" text_only="1" retr_st="null" ct_cls="null" sub_cs="106" ct_l="null" tr_id="transaction003" st="null" m_cls="personal" d_tm="null" retr_txt_cs="null" d_rpt="129" date_sent="0" seen="1" v="18" exp="604800" pri="129" resp_txt="null" rpt_a="null" locked="0" retr_txt="null" resp_st="null" readable_date="Jan 1, 2021 3:00:00 AM" contact_name="Eve NoParts">
+    <parts></parts>
+  </mms>
+</smses>

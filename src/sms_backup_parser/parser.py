@@ -380,3 +380,99 @@ def _parse_combined(input_path, output_dir, stem, strip_media,
         "call_count": counts["call"],
         "output_files": output_files,
     }
+
+
+def parse_backup_multi(input_paths, output_dir, strip_media=False,
+                       inject_date_iso=True, indent=2, progress_tracker_factory=None):
+    """Parse multiple XML files into a single combined JSON output.
+
+    Merges all SMS, MMS, and call records from all input files into one
+    combined JSON file with top-level 'sms', 'mms', and 'calls' arrays.
+
+    Args:
+        input_paths: List of Path objects to XML backup files.
+        output_dir: Directory for the output file.
+        strip_media: If True, omit base64 'data' attribute from MMS parts.
+        inject_date_iso: If True, add computed date_iso fields.
+        indent: JSON indentation level (None for compact).
+        progress_tracker_factory: Optional callable returning a ProgressTracker.
+
+    Returns:
+        dict with keys 'sms_count', 'mms_count', 'call_count', 'output_files'.
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    stem = Path(input_paths[0]).stem
+    output_path = output_dir / f"{stem}.json"
+    total_counts = {"sms": 0, "mms": 0, "call": 0}
+
+    with CombinedJsonWriter(output_path, indent=indent) as writer:
+        for input_path in input_paths:
+            input_path = Path(input_path)
+
+            if not input_path.exists():
+                raise FileNotFoundError(f"Input file not found: {input_path}")
+            if not input_path.is_file():
+                raise FileNotFoundError(f"Not a file: {input_path}")
+
+            progress_tracker = None
+            if progress_tracker_factory:
+                progress_tracker = progress_tracker_factory()
+                progress_tracker.start()
+
+            try:
+                context = ET.iterparse(str(input_path), events=('end',))
+
+                for event, elem in context:
+                    tag = elem.tag
+
+                    if tag == 'sms':
+                        record = _extract_sms(elem, inject_date_iso)
+                        writer.write_record("sms", record)
+                        total_counts["sms"] += 1
+                        if progress_tracker:
+                            if progress_tracker._verbosity >= 2:
+                                progress_tracker.update_verbose("sms", record)
+                            else:
+                                progress_tracker.update("sms")
+                        elem.clear()
+
+                    elif tag == 'mms':
+                        record = _extract_mms(elem, inject_date_iso, strip_media)
+                        writer.write_record("mms", record)
+                        total_counts["mms"] += 1
+                        if progress_tracker:
+                            if progress_tracker._verbosity >= 2:
+                                progress_tracker.update_verbose("mms", record)
+                            else:
+                                progress_tracker.update("mms")
+                        elem.clear()
+
+                    elif tag == 'call':
+                        record = _extract_call(elem, inject_date_iso)
+                        writer.write_record("calls", record)
+                        total_counts["call"] += 1
+                        if progress_tracker:
+                            if progress_tracker._verbosity >= 2:
+                                progress_tracker.update_verbose("call", record)
+                            else:
+                                progress_tracker.update("call")
+                        elem.clear()
+
+            except ET.ParseError as e:
+                raise ET.ParseError(
+                    f"Malformed XML in {input_path}: {e}"
+                ) from e
+
+            if progress_tracker:
+                progress_tracker.finish()
+
+    output_files = [str(output_path)] if any(total_counts.values()) else []
+
+    return {
+        "sms_count": total_counts["sms"],
+        "mms_count": total_counts["mms"],
+        "call_count": total_counts["call"],
+        "output_files": output_files,
+    }

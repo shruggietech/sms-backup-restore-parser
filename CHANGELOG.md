@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 _No unreleased changes._
 
+## [0.1.1] - 2026-03-17
+
+### Fixed
+- **CLI: Multi-file `--combined` now produces a single merged output.** Previously, passing multiple XML files with `--combined` wrote a separate JSON file per input, each with empty arrays for missing record types. Records from all inputs are now merged into one combined JSON file.
+- **Build: PyInstaller binary now bundles `jsonschema`.** The `--validate` flag previously always failed in standalone binaries with an ImportError. The build script now installs the `[validate]` extra and passes `--hidden-import=jsonschema` to PyInstaller.
+- **CLI: Exit codes now propagate correctly.** `__main__.py` was discarding the return value from `main()`, causing the process to always exit with code 0 regardless of errors.
+
+### Added
+- **Parser: `parse_backup_multi()` function** for merging multiple XML inputs into a single combined JSON output in one pass.
+- **Tests: Writer unit tests** for `JsonArrayWriter` and `CombinedJsonWriter` (`tests/test_writers.py`).
+- **Tests: Validate module tests** (`tests/test_validate.py`).
+- **Tests: Multi-file combined mode tests**, compact output tests, exit code propagation tests, and CLI `--validate` flag tests.
+- **Tests: Committed synthetic XML fixtures** to `tests/fixtures/`. Previously excluded by `.gitignore`.
+
 ## [0.1.0] - 2026-03-17
 
 ### Added
@@ -44,5 +58,6 @@ _No unreleased changes._
 - **pyproject.toml**: Moved `classifiers` from under `[project.urls]` to `[project]` where it belongs (was causing `pip install -e` to fail)
 - Combined JSON output (`--combined`) now correctly handles interleaved record types (e.g., SMS-MMS-SMS) by buffering each section independently
 
-[Unreleased]: https://github.com/shruggietech/sms-backup-restore-parser/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/shruggietech/sms-backup-restore-parser/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/shruggietech/sms-backup-restore-parser/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/shruggietech/sms-backup-restore-parser/releases/tag/v0.1.0

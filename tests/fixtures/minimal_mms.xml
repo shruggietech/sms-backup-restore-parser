@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<smses count="1">
+  <mms date="1609545600000" ct_t="application/vnd.wap.multipart.related" msg_box="1" rr="129" sub="Test MMS Subject" read_status="null" address="+15551234567" m_id="message001@example.com" read="1" m_size="12345" m_type="132" text_only="0" retr_st="null" ct_cls="null" sub_cs="106" ct_l="null" tr_id="transaction001" st="null" m_cls="personal" d_tm="null" retr_txt_cs="null" d_rpt="129" date_sent="0" seen="1" v="18" exp="604800" pri="129" resp_txt="null" rpt_a="null" locked="0" retr_txt="null" resp_st="null" sim_slot="0" readable_date="Jan 2, 2021 12:00:00 AM" contact_name="Alice Smith">
+    <parts>
+      <part seq="0" ct="application/smil" name="smil.xml" chset="null" cd="null" fn="null" cid="&lt;smil&gt;" cl="smil.xml" ctt_s="null" ctt_t="null" text="&lt;smil&gt;&lt;body&gt;&lt;par dur=&quot;5000ms&quot;&gt;&lt;img src=&quot;image.jpg&quot;/&gt;&lt;text src=&quot;text.txt&quot;/&gt;&lt;/par&gt;&lt;/body&gt;&lt;/smil&gt;" />
+      <part seq="1" ct="text/plain" name="text.txt" chset="106" cd="null" fn="text.txt" cid="&lt;text&gt;" cl="text.txt" ctt_s="null" ctt_t="null" text="Hello from MMS!" />
+      <part seq="2" ct="image/jpeg" name="image.jpg" chset="null" cd="null" fn="image.jpg" cid="&lt;image&gt;" cl="image.jpg" ctt_s="null" ctt_t="null" text="null" data="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" />
+    </parts>
+    <addrs>
+      <addr address="+15559876543" type="137" charset="106" />
+      <addr address="+15551234567" type="151" charset="106" />
+    </addrs>
+  </mms>
+</smses>
