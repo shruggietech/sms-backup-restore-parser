@@ -15,6 +15,7 @@ class TestSchemaDiscovery:
         assert SCHEMA_PATH.exists()
 
     def test_schema_is_valid_json(self):
+        assert SCHEMA_PATH is not None
         with open(SCHEMA_PATH, 'r', encoding='utf-8') as f:
             schema = json.load(f)
         assert "$schema" in schema or "type" in schema

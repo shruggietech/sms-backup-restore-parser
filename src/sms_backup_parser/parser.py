@@ -21,7 +21,7 @@ class JsonArrayWriter:
             w.write_record({"key": "value"})
     """
 
-    def __init__(self, filepath, indent=2):
+    def __init__(self, filepath, indent: int | None = 2):
         self._filepath = Path(filepath)
         self._indent = indent
         self._file = None
@@ -34,6 +34,7 @@ class JsonArrayWriter:
 
     def write_record(self, record):
         """Append one record to the JSON array."""
+        assert self._file is not None, "write_record called outside context manager"
         if self._count > 0:
             self._file.write(',\n')
         json.dump(record, self._file, indent=self._indent, ensure_ascii=False)
@@ -66,7 +67,7 @@ class CombinedJsonWriter:
 
     SECTIONS = ("sms", "mms", "calls")
 
-    def __init__(self, filepath, indent=2):
+    def __init__(self, filepath, indent: int | None = 2):
         self._filepath = Path(filepath)
         self._indent = indent
         self._counts = {s: 0 for s in self.SECTIONS}
