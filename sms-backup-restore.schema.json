@@ -1,0 +1,398 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SMS/MMS and Call Log Backup Schema",
+  "description": "Schema for JSON output produced by sms-backup-restore-parser from SyncTech SMS Backup & Restore XML exports.",
+  "type": "object",
+  "properties": {
+    "sms": {
+      "type": "array",
+      "description": "Array of SMS message records extracted from the backup XML.",
+      "items": {
+        "type": "object",
+        "description": "A single SMS message record. All values are strings, extracted directly from XML attributes via dict(elem.attrib).",
+        "properties": {
+          "protocol": {
+            "type": "string",
+            "description": "Transport protocol identifier. Almost always \"0\" for standard SMS."
+          },
+          "address": {
+            "type": "string",
+            "description": "Phone number of the sender or recipient. Format varies by carrier and locale."
+          },
+          "date": {
+            "type": "string",
+            "description": "Timestamp as Java epoch milliseconds (milliseconds since 1970-01-01 00:00:00 UTC)."
+          },
+          "date_iso": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Computed ISO 8601 UTC timestamp derived from the date field. Injected by the parser."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["1", "2", "3", "4", "5", "6"],
+            "description": "Message direction and status. 1=Received, 2=Sent, 3=Draft, 4=Outbox, 5=Failed, 6=Queued."
+          },
+          "subject": {
+            "type": ["string", "null"],
+            "description": "Message subject line. Almost universally the literal string \"null\" for SMS."
+          },
+          "body": {
+            "type": "string",
+            "description": "Full text content of the message."
+          },
+          "toa": {
+            "type": ["string", "null"],
+            "description": "Type of Address for the destination. Typically \"null\"."
+          },
+          "sc_toa": {
+            "type": ["string", "null"],
+            "description": "Type of Address for the service center. Typically \"null\"."
+          },
+          "service_center": {
+            "type": ["string", "null"],
+            "description": "SMSC number that routed the message. Present for received messages, typically \"null\" for sent."
+          },
+          "read": {
+            "type": "string",
+            "enum": ["0", "1"],
+            "description": "Whether the message has been read. 0=Unread, 1=Read."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["-1", "0", "32", "64"],
+            "description": "Delivery status. -1=None, 0=Complete, 32=Pending, 64=Failed."
+          },
+          "locked": {
+            "type": "string",
+            "enum": ["0", "1"],
+            "description": "Whether the message is locked (protected from deletion). 0=Unlocked, 1=Locked."
+          },
+          "date_sent": {
+            "type": "string",
+            "description": "Timestamp when the message was sent, in Java epoch milliseconds. May be \"0\" if unavailable."
+          },
+          "sub_id": {
+            "type": "string",
+            "description": "SIM subscription ID identifying which SIM slot handled the message. Format is device-dependent."
+          },
+          "readable_date": {
+            "type": "string",
+            "description": "Human-readable date string. Only present when the backup preference is enabled."
+          },
+          "contact_name": {
+            "type": "string",
+            "description": "Contact display name for the address. Only present when the backup preference is enabled. \"(Unknown)\" if no match."
+          }
+        },
+        "required": ["address", "date", "type", "body", "read", "status"],
+        "additionalProperties": true
+      }
+    },
+    "mms": {
+      "type": "array",
+      "description": "Array of MMS message records extracted from the backup XML.",
+      "items": {
+        "type": "object",
+        "description": "A single MMS message record. Root-level attributes are strings from XML. Nested parts and addrs are collected into arrays.",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Timestamp in Java epoch milliseconds for when the message was sent or received."
+          },
+          "date_iso": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Computed ISO 8601 UTC timestamp derived from the date field. Injected by the parser."
+          },
+          "ct_t": {
+            "type": "string",
+            "description": "Top-level Content-Type of the MMS message (e.g. \"application/vnd.wap.multipart.related\")."
+          },
+          "msg_box": {
+            "type": "string",
+            "enum": ["1", "2", "3", "4"],
+            "description": "Mailbox folder. 1=Received, 2=Sent, 3=Draft, 4=Outbox."
+          },
+          "rr": {
+            "type": "string",
+            "description": "Read report request flag. Indicates whether a read receipt was requested."
+          },
+          "sub": {
+            "type": "string",
+            "description": "Subject line of the MMS message, if provided by the sender."
+          },
+          "read_status": {
+            "type": "string",
+            "description": "Read status of the message in the MMS protocol sense."
+          },
+          "address": {
+            "type": "string",
+            "description": "Phone number of the primary sender or recipient."
+          },
+          "m_id": {
+            "type": "string",
+            "description": "Globally unique Message-ID assigned by the MMS service center."
+          },
+          "read": {
+            "type": "string",
+            "enum": ["0", "1"],
+            "description": "Whether the user has read this message. 0=Unread, 1=Read."
+          },
+          "m_size": {
+            "type": "string",
+            "description": "Total size of the MMS message in bytes, as reported by the carrier."
+          },
+          "m_type": {
+            "type": "string",
+            "description": "MMS message type code per WAP MMS spec (e.g. 128=Send Request, 132=Retrieve Confirmation)."
+          },
+          "text_only": {
+            "type": "string",
+            "enum": ["0", "1"],
+            "description": "Flag indicating text-only MMS with no media. 0=Has media, 1=Text only."
+          },
+          "retr_st": {
+            "type": "string",
+            "description": "Retrieval status from the MMS server."
+          },
+          "ct_cls": {
+            "type": "string",
+            "description": "Content class of the MMS, defining the category of content allowed."
+          },
+          "sub_cs": {
+            "type": "string",
+            "description": "Character set encoding used for the subject field."
+          },
+          "ct_l": {
+            "type": "string",
+            "description": "Content-Location URI where the MMS content can be retrieved."
+          },
+          "tr_id": {
+            "type": "string",
+            "description": "Transaction ID used to correlate MMS protocol exchanges between client and server."
+          },
+          "st": {
+            "type": "string",
+            "description": "MMS delivery status."
+          },
+          "m_cls": {
+            "type": "string",
+            "description": "Message class (e.g. \"personal\", \"advertisement\", \"informational\", \"auto\")."
+          },
+          "d_tm": {
+            "type": "string",
+            "description": "Delivery time."
+          },
+          "retr_txt_cs": {
+            "type": "string",
+            "description": "Character set for the retrieval text."
+          },
+          "d_rpt": {
+            "type": "string",
+            "description": "Delivery report request flag. Indicates whether delivery confirmation was requested."
+          },
+          "date_sent": {
+            "type": "string",
+            "description": "Timestamp when the message was sent, in Java epoch milliseconds."
+          },
+          "seen": {
+            "type": "string",
+            "enum": ["0", "1"],
+            "description": "Whether the message notification has been seen (distinct from read). 0=Not seen, 1=Seen."
+          },
+          "v": {
+            "type": "string",
+            "description": "MMS specification version number (e.g. \"18\" for version 1.2)."
+          },
+          "exp": {
+            "type": "string",
+            "description": "Expiry duration or timestamp for the message on the MMS server, in seconds."
+          },
+          "pri": {
+            "type": "string",
+            "description": "Priority level per MMS spec. 128=Normal, 129=High, 130=Low."
+          },
+          "resp_txt": {
+            "type": "string",
+            "description": "Response text from the MMS server."
+          },
+          "rpt_a": {
+            "type": "string",
+            "description": "Report allowed flag."
+          },
+          "locked": {
+            "type": "string",
+            "enum": ["0", "1"],
+            "description": "Whether the message is locked against deletion. 0=Unlocked, 1=Locked."
+          },
+          "retr_txt": {
+            "type": "string",
+            "description": "Retrieval text accompanying the message from the MMS server."
+          },
+          "resp_st": {
+            "type": "string",
+            "description": "Response status code from the MMS server."
+          },
+          "sim_slot": {
+            "type": "string",
+            "description": "SIM card slot identifier. Not in official XSD but appears in real backups."
+          },
+          "readable_date": {
+            "type": "string",
+            "description": "Human-readable date string. Only present when the backup preference is enabled."
+          },
+          "contact_name": {
+            "type": "string",
+            "description": "Contact display name for the address. Only present when the backup preference is enabled."
+          },
+          "parts": {
+            "type": "array",
+            "description": "Array of MMS part objects representing the multipart message components.",
+            "items": {
+              "type": "object",
+              "description": "A single MMS part (text, image, audio, video, or SMIL layout descriptor).",
+              "properties": {
+                "seq": {
+                  "type": "string",
+                  "description": "Sequence number controlling part order within the message. Parts are ordered by ascending seq value."
+                },
+                "ct": {
+                  "type": "string",
+                  "description": "MIME content type of this part (e.g. \"text/plain\", \"image/jpeg\", \"application/smil\")."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the part, often derived from the original filename. May be \"null\"."
+                },
+                "chset": {
+                  "type": "string",
+                  "description": "Character set encoding for text parts. Uses IANA charset numbers (e.g. \"106\" for UTF-8)."
+                },
+                "cd": {
+                  "type": "string",
+                  "description": "Content-Disposition header value. Indicates how the part should be presented."
+                },
+                "fn": {
+                  "type": "string",
+                  "description": "Filename for the part as specified in content headers. May differ from name."
+                },
+                "cid": {
+                  "type": "string",
+                  "description": "Content-ID used to reference this part from SMIL layout or other parts."
+                },
+                "cl": {
+                  "type": "string",
+                  "description": "Content-Location providing a URI-like identifier for the part."
+                },
+                "ctt_s": {
+                  "type": "string",
+                  "description": "Content-Type start parameter. Identifies the root part of the multipart message."
+                },
+                "ctt_t": {
+                  "type": "string",
+                  "description": "Content-Type type parameter. Specifies the overall type of the multipart message."
+                },
+                "text": {
+                  "type": "string",
+                  "description": "Text content of the part. Populated for text/plain parts, typically \"null\" for binary parts."
+                },
+                "data": {
+                  "type": "string",
+                  "description": "Base64-encoded binary payload. Present for media parts (images, audio, video). Primary driver of large file sizes."
+                }
+              },
+              "required": ["seq", "ct", "name", "chset", "cd", "fn", "cid", "cl", "ctt_s", "ctt_t", "text"],
+              "additionalProperties": true
+            }
+          },
+          "addrs": {
+            "type": "array",
+            "description": "Array of MMS address objects identifying participants in the conversation.",
+            "items": {
+              "type": "object",
+              "description": "A single MMS address entry. For group MMS, multiple addr entries exist (one per participant).",
+              "properties": {
+                "address": {
+                  "type": "string",
+                  "description": "Phone number or email address of this participant."
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["129", "130", "137", "151"],
+                  "description": "Role of this participant. 129=BCC, 130=CC, 137=From, 151=To."
+                },
+                "charset": {
+                  "type": "string",
+                  "description": "Character set identifier for this address entry (e.g. \"106\" for UTF-8)."
+                }
+              },
+              "required": ["address", "type", "charset"],
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "date", "ct_t", "msg_box", "rr", "read_status", "address", "m_id",
+          "read", "m_size", "m_type", "retr_st", "ct_cls", "sub_cs", "ct_l",
+          "tr_id", "st", "m_cls", "d_tm", "retr_txt_cs", "d_rpt", "date_sent",
+          "seen", "v", "exp", "pri", "resp_txt", "rpt_a", "locked", "retr_txt",
+          "resp_st"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "calls": {
+      "type": "array",
+      "description": "Array of call log records extracted from the backup XML.",
+      "items": {
+        "type": "object",
+        "description": "A single call log record. All values are strings, extracted directly from XML attributes.",
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "Phone number associated with the call. May include country code prefixes."
+          },
+          "duration": {
+            "type": "string",
+            "description": "Length of the call in seconds. \"0\" for missed or rejected calls."
+          },
+          "date": {
+            "type": "string",
+            "description": "Timestamp of the call in Java epoch milliseconds."
+          },
+          "date_iso": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Computed ISO 8601 UTC timestamp derived from the date field. Injected by the parser."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["1", "2", "3", "4", "5", "6"],
+            "description": "Call direction and disposition. 1=Incoming, 2=Outgoing, 3=Missed, 4=Voicemail, 5=Rejected, 6=Refused List."
+          },
+          "presentation": {
+            "type": "string",
+            "enum": ["1", "2", "3", "4"],
+            "description": "Caller ID presentation mode. 1=Allowed, 2=Restricted, 3=Unknown, 4=Payphone."
+          },
+          "subscription_id": {
+            "type": "string",
+            "description": "SIM subscription that handled the call. Format varies: simple index or full SIM ICCID string."
+          },
+          "readable_date": {
+            "type": "string",
+            "description": "Human-readable date string. Only present when the backup preference is enabled."
+          },
+          "contact_name": {
+            "type": "string",
+            "description": "Contact display name matched to the number. Only present when the backup preference is enabled."
+          }
+        },
+        "required": ["number", "duration", "date", "type", "presentation"],
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}
