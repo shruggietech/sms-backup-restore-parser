@@ -1,23 +1,258 @@
-# SMS Backup & Restore -- XML Format Technical Reference
+# SMS Backup & Restore Parser — Technical Specification
 
-An independent technical reference for the XML backup format produced by
-SyncTech's **SMS Backup & Restore** Android application. All prose is original.
-Field semantics are derived from the upstream XSD, official documentation, and
-the XSL stylesheets distributed alongside the app.
+| **Attribute** | **Value** |
+|---------------|-----------|
+| Project Name | SMS Backup & Restore Parser |
+| Project Slug | `sms-backup-restore-parser` |
+| Repository | [github.com/shruggietech/sms-backup-restore-parser](https://github.com/shruggietech/sms-backup-restore-parser) |
+| License | [Apache License v2.0](https://www.apache.org/licenses/LICENSE-2.0) |
+| Version | Pre-release (0.1.0 target) |
+| Author | William Thompson (ShruggieTech LLC) |
+| Latest Revision Date | 2026-03-17 |
+| Document Status | DRAFT |
+| Audience | AI-first, Human-second |
 
----
+<a name="table-of-contents" id="table-of-contents"></a>
+<hr class="print-page-break">
 
-## XML File Structure
+## Table of Contents
 
-SMS Backup & Restore generates two distinct types of XML backup files:
+- [1. Document Information](#1-document-information)
+  - [1.1. Purpose and Audience](#11-purpose-and-audience)
+  - [1.2. Scope](#12-scope)
+  - [1.3. Document Maintenance](#13-document-maintenance)
+  - [1.4. Conventions Used in This Document](#14-conventions-used-in-this-document)
+  - [1.5. Terminology](#15-terminology)
+  - [1.6. Reference Documents](#16-reference-documents)
+- [2. Project Overview](#2-project-overview)
+  - [2.1. Project Identity](#21-project-identity)
+  - [2.2. Design Goals](#22-design-goals)
+  - [2.3. Non-Goals](#23-non-goals)
+  - [2.4. Platform and Runtime Requirements](#24-platform-and-runtime-requirements)
+- [3. Upstream XML Format](#3-upstream-xml-format)
+  - [3.1. File Structure](#31-file-structure)
+  - [3.2. Structural Invariants](#32-structural-invariants)
+- [4. SMS Fields](#4-sms-fields)
+- [5. MMS Fields](#5-mms-fields)
+  - [5.1. MMS Record Attributes](#51-mms-record-attributes)
+  - [5.2. MMS Part Fields](#52-mms-part-fields)
+  - [5.3. Common MMS Content Types](#53-common-mms-content-types)
+  - [5.4. MMS Address Fields](#54-mms-address-fields)
+- [6. Call Log Fields](#6-call-log-fields)
+- [7. Enum Reference](#7-enum-reference)
+  - [7.1. SMS Type](#71-sms-type)
+  - [7.2. SMS Status](#72-sms-status)
+  - [7.3. SMS/MMS Read](#73-smsmms-read)
+  - [7.4. MMS Message Box](#74-mms-message-box)
+  - [7.5. MMS Address Type](#75-mms-address-type)
+  - [7.6. Call Type](#76-call-type)
+  - [7.7. Call Presentation](#77-call-presentation)
+- [8. Date Handling](#8-date-handling)
+  - [8.1. Epoch Format](#81-epoch-format)
+  - [8.2. Conversion](#82-conversion)
+  - [8.3. date vs date_sent](#83-date-vs-date_sent)
+  - [8.4. readable_date](#84-readable_date)
+  - [8.5. Computed date_iso Field](#85-computed-date_iso-field)
+- [9. XSD Known Issues](#9-xsd-known-issues)
+  - [9.1. Missing Definitions](#91-missing-definitions)
+  - [9.2. Type Mismatches](#92-type-mismatches)
+  - [9.3. RCS and Advanced Messages](#93-rcs-and-advanced-messages)
+  - [9.4. Backup Encryption](#94-backup-encryption)
+- [10. Parser Architecture](#10-parser-architecture)
+  - [10.1. Streaming Parse](#101-streaming-parse)
+  - [10.2. Flat Attribute Extraction](#102-flat-attribute-extraction)
+  - [10.3. Output Modes](#103-output-modes)
+  - [10.4. Media Stripping](#104-media-stripping)
+  - [10.5. Schema Validation](#105-schema-validation)
+- [11. JSON Output Format](#11-json-output-format)
+  - [11.1. Separate Mode](#111-separate-mode)
+  - [11.2. Combined Mode](#112-combined-mode)
+  - [11.3. JSON Schema](#113-json-schema)
+- [12. CLI Interface](#12-cli-interface)
+  - [12.1. Command Structure](#121-command-structure)
+  - [12.2. Global Flags](#122-global-flags)
+  - [12.3. parse Subcommand](#123-parse-subcommand)
+  - [12.4. report Subcommand](#124-report-subcommand)
+  - [12.5. version Subcommand](#125-version-subcommand)
+  - [12.6. Exit Codes](#126-exit-codes)
+- [13. Report Types](#13-report-types)
+  - [13.1. Summary Report](#131-summary-report)
+  - [13.2. Contacts Report](#132-contacts-report)
+  - [13.3. Timeline Report](#133-timeline-report)
+- [14. Repository Layout](#14-repository-layout)
+- [15. Documentation Site](#15-documentation-site)
+  - [15.1. Site Configuration](#151-site-configuration)
+  - [15.2. Navigation Structure](#152-navigation-structure)
+  - [15.3. Changelog Synchronization](#153-changelog-synchronization)
+  - [15.4. Build and Preview](#154-build-and-preview)
+  - [15.5. Deployment](#155-deployment)
+  - [15.6. Dependencies](#156-dependencies)
 
-1. **Message backups** (SMS and MMS combined) use a `<smses>` root element.
-2. **Call log backups** use a `<calls>` root element.
+<a name="1-document-information" id="1-document-information"></a>
+<hr class="print-page-break">
 
-These are always separate files -- messages and calls never appear in the
-same XML document.
+## 1. Document Information
 
-### Message backup skeleton
+<a name="11-purpose-and-audience" id="11-purpose-and-audience"></a>
+### 1.1. Purpose and Audience
+
+<div style="text-align:justify">
+
+This specification is the authoritative technical reference for the SMS Backup & Restore Parser project. It documents the upstream XML format produced by SyncTech's SMS Backup & Restore Android application, the parser's architecture and behavioral contracts, the CLI interface, the JSON output format, and the project's documentation infrastructure.
+
+</div>
+
+<div style="text-align:justify">
+
+The primary audience is AI coding agents operating in isolated context windows. All sections are self-contained: an agent reading this document has the complete context needed to implement, modify, or extend any component of the project without consulting external sources. The secondary audience is human developers who contribute to or review the project.
+
+</div>
+
+<div style="text-align:justify">
+
+This specification does NOT serve as a user guide, tutorial, or end-user documentation. Those artifacts are maintained separately in the `docs/` directory and published via the documentation site (see [§15](#15-documentation-site)).
+
+</div>
+
+<a name="12-scope" id="12-scope"></a>
+### 1.2. Scope
+
+#### In Scope
+
+- **Upstream XML format.** Complete field-level documentation of the SMS, MMS, and call log XML backup format produced by SyncTech's SMS Backup & Restore application. Field semantics, enum values, structural invariants, and known XSD deficiencies.
+- **Parser architecture.** Streaming parse strategy, attribute extraction model, output modes, and media stripping behavior.
+- **JSON output format.** Schema-validated JSON structure for both separate and combined output modes.
+- **CLI interface.** Subcommand structure, flags, exit codes, and verbosity model.
+- **Report types.** Summary, contacts, and timeline report specifications.
+- **Repository layout.** File and directory structure conventions.
+- **Documentation site.** MkDocs configuration, navigation, deployment, and styling conventions.
+
+#### Out of Scope
+
+- **SyncTech application internals.** This specification documents the XML output format, not the application that produces it.
+- **Downstream consumers.** Tools that consume the parser's JSON output (DuckDB queries, jq pipelines, custom scripts) are outside the scope of this document.
+
+<a name="13-document-maintenance" id="13-document-maintenance"></a>
+### 1.3. Document Maintenance
+
+<div style="text-align:justify">
+
+This specification is maintained as a living document alongside the codebase. It resides at `reference/knowledge-base.md` in the repository. When the specification and the implementation disagree, the specification is presumed correct unless a deliberate amendment has been recorded in the document history.
+
+</div>
+
+<div style="text-align:justify">
+
+When specification text is amended as a result of a sprint batch, each modified section receives an amendment callout in the following format: `> **Updated YYYY-MM-DD:**` followed by a description of the change. Cross-references use §X.Y notation and are verified after all edits to ensure consistency.
+
+</div>
+
+<a name="14-conventions-used-in-this-document" id="14-conventions-used-in-this-document"></a>
+### 1.4. Conventions Used in This Document
+
+<div style="text-align:justify">
+
+This specification uses the requirement level keywords defined in RFC 2119. "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" carry their RFC 2119 meanings when capitalized.
+
+</div>
+
+<a name="15-terminology" id="15-terminology"></a>
+### 1.5. Terminology
+
+| Term | Definition |
+|------|------------|
+| Upstream | SyncTech's SMS Backup & Restore application and its official documentation. |
+| XSD | The XML Schema Definition published by SyncTech at `sms.xsd_.txt`. |
+| Java epoch milliseconds | Milliseconds elapsed since 1970-01-01 00:00:00 UTC, the timestamp format used by Android. |
+| Record | A single SMS, MMS, or call log entry in the XML backup. |
+| Combined mode | Parser output mode that writes all record types to a single JSON file. |
+| Separate mode | Parser output mode (the default) that writes one JSON file per record type. |
+
+<a name="16-reference-documents" id="16-reference-documents"></a>
+### 1.6. Reference Documents
+
+| Document | Location | Description |
+|----------|----------|-------------|
+| Upstream field definitions | [synctech.com.au/.../fields-in-xml-backup-files/](https://www.synctech.com.au/sms-backup-restore/fields-in-xml-backup-files/) | Official documentation of XML attribute names, types, and semantics. |
+| Upstream XSD | [synctech.com.au/.../sms.xsd_.txt](https://synctech.com.au/wp-content/uploads/2018/01/sms.xsd_.txt) | XML Schema Definition for the `<smses>` root element. Does not cover `<calls>` or `<addrs>`. |
+| JSON Schema | `sms-backup-restore.schema.json` (repository root) | JSON Schema (draft-07) derived from upstream field definitions. This is the project's source of truth for field names, types, and enum semantics. |
+| CLAUDE.md | `CLAUDE.md` (repository root) | Claude Code agent instructions covering coding conventions, architecture decisions, and development workflow. |
+| Copilot Instructions | `.github/copilot-instructions.md` | GitHub Copilot context mirroring the CLAUDE.md conventions. |
+
+<div style="text-align:justify">
+
+When the upstream documentation and the local JSON Schema conflict, the local schema takes precedence. The schema is updated deliberately when upstream changes warrant it.
+
+</div>
+
+> **Provenance note:** The upstream XML format documentation in §3 through §9 is derived entirely from SyncTech's published XSD, official field reference pages, and the XSL stylesheets distributed with the application. All prose is original and independently composed.
+
+<a name="2-project-overview" id="2-project-overview"></a>
+<hr class="print-page-break">
+
+## 2. Project Overview
+
+<a name="21-project-identity" id="21-project-identity"></a>
+### 2.1. Project Identity
+
+| Property | Value |
+|----------|-------|
+| <span style="white-space: nowrap;">Product name</span> | SMS Backup & Restore Parser |
+| <span style="white-space: nowrap;">Organization</span> | ShruggieTech LLC (https://shruggie.tech) |
+| <span style="white-space: nowrap;">Author</span> | William Thompson |
+| <span style="white-space: nowrap;">Language</span> | Python 3.12+ |
+| <span style="white-space: nowrap;">Package name</span> | `sms_backup_parser` |
+| <span style="white-space: nowrap;">CLI command</span> | `sms-backup-parser` |
+| <span style="white-space: nowrap;">License</span> | Apache License 2.0 |
+
+<div style="text-align:justify">
+
+The SMS Backup & Restore Parser is a CLI utility that converts SyncTech SMS Backup & Restore XML exports into structured, schema-validated JSON and generates analytical reports. It is distributed as standalone executables for Windows and Ubuntu, requiring no Python installation on the target system.
+
+</div>
+
+<a name="22-design-goals" id="22-design-goals"></a>
+### 2.2. Design Goals
+
+<div style="text-align:justify">
+
+The parser handles multi-gigabyte XML files with constant memory usage. All record types (SMS, MMS, call logs) are supported in a single tool. JSON output conforms to a documented schema and is suitable for downstream analysis with tools such as DuckDB, jq, or custom scripts. Built-in reports provide immediate analytical value without requiring external tooling.
+
+</div>
+
+<a name="23-non-goals" id="23-non-goals"></a>
+### 2.3. Non-Goals
+
+<div style="text-align:justify">
+
+The parser does not modify, create, or merge XML backup files. It does not decrypt encrypted (Pro) backups; decryption is a prerequisite step. It does not provide a GUI or web interface. It does not communicate with the SyncTech application or any Android device.
+
+</div>
+
+<a name="24-platform-and-runtime-requirements" id="24-platform-and-runtime-requirements"></a>
+### 2.4. Platform and Runtime Requirements
+
+<div style="text-align:justify">
+
+Development requires Python 3.12 or later. The core parse path uses only the Python standard library. Optional dependencies (`jsonschema` for validation, `pyinstaller` for builds) are declared in `pyproject.toml` under named extras. Standalone executables are self-contained and require no Python installation. Windows 10+ and Ubuntu 22.04+ are the supported distribution targets.
+
+</div>
+
+<a name="3-upstream-xml-format" id="3-upstream-xml-format"></a>
+<hr class="print-page-break">
+
+## 3. Upstream XML Format
+
+<a name="31-file-structure" id="31-file-structure"></a>
+### 3.1. File Structure
+
+<div style="text-align:justify">
+
+SMS Backup & Restore generates two distinct types of XML backup files. Message backups (containing both SMS and MMS records) use a `<smses>` root element. Call log backups use a `<calls>` root element. These are always separate files; messages and calls never appear in the same XML document.
+
+</div>
+
+**Message backup skeleton:**
 
 ```xml
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
@@ -38,7 +273,7 @@ same XML document.
 </smses>
 ```
 
-### Call log backup skeleton
+**Call log backup skeleton:**
 
 ```xml
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
@@ -48,126 +283,133 @@ same XML document.
 </calls>
 ```
 
-### Key structural points
+<a name="32-structural-invariants" id="32-structural-invariants"></a>
+### 3.2. Structural Invariants
 
-- The `count` attribute on the root element reports the total number of child
-  records in the file.
-- Within `<smses>`, `<sms>` and `<mms>` elements can appear in any order --
-  they are interleaved chronologically rather than grouped by type.
-- `<mms>` elements always contain a `<parts>` wrapper (with one or more
-  `<part>` children) and may contain an `<addrs>` wrapper (with one or more
-  `<addr>` children). Note that the `<addrs>` element is present in real-world
-  exports but is **not defined** in the official XSD schema.
-- File sizes for long-term users routinely reach hundreds of megabytes to
-  multiple gigabytes, primarily driven by base64-encoded MMS media.
-- The XML declaration typically specifies `encoding='UTF-8'`.
-- When the app preference "Add XSL Tag" is enabled, the XML includes an
-  `<?xml-stylesheet?>` processing instruction referencing `sms.xsl` or
-  `calls.xsl`, allowing browser-based rendering.
-- When "Add Readable Date" is enabled, `readable_date` and `contact_name`
-  optional attributes are populated on each record.
+<div style="text-align:justify">
 
----
+The `count` attribute on the root element reports the total number of child records in the file. Within `<smses>`, `<sms>` and `<mms>` elements appear in any order, interleaved chronologically rather than grouped by type. Each `<mms>` element contains a `<parts>` wrapper (with one or more `<part>` children) and MAY contain an `<addrs>` wrapper (with one or more `<addr>` children). The `<addrs>` element is present in real-world exports but is not defined in the official XSD schema.
 
-## SMS Fields
+</div>
 
-Each `<sms>` element is a self-closing tag whose entire payload is carried in
-XML attributes. There are no child elements.
+<div style="text-align:justify">
+
+File sizes for long-term users routinely reach hundreds of megabytes to multiple gigabytes, primarily driven by base64-encoded MMS media. The XML declaration specifies `encoding='UTF-8'`. When the app preference "Add XSL Tag" is enabled, the XML includes an `<?xml-stylesheet?>` processing instruction referencing `sms.xsl` or `calls.xsl`, allowing browser-based rendering. When "Add Readable Date" is enabled, `readable_date` and `contact_name` optional attributes are populated on each record.
+
+</div>
+
+<a name="4-sms-fields" id="4-sms-fields"></a>
+<hr class="print-page-break">
+
+## 4. SMS Fields
+
+<div style="text-align:justify">
+
+Each `<sms>` element is a self-closing tag whose entire payload is carried in XML attributes. There are no child elements.
+
+</div>
 
 | Field | XSD Type | Required | Description | Valid Values |
 |-------|----------|----------|-------------|--------------|
 | `protocol` | `xs:unsignedByte` | No | Transport protocol identifier. Almost always `0` for standard SMS. | Typically `0` |
-| `address` | `xs:string` | Yes | Phone number of the sender or recipient. Format varies by carrier and locale (may include country code, spaces, dashes, or leading `+`). | Any string |
-| `date` | `xs:unsignedLong` | Yes | Timestamp of when the message was sent or received, expressed as milliseconds since the Unix epoch (1970-01-01 00:00:00 UTC). This is Java's standard epoch-millisecond representation. | Integer (as string in XML) |
-| `type` | `xs:unsignedByte` | Yes | Direction and status of the message. | `1` = Received, `2` = Sent, `3` = Draft, `4` = Outbox, `5` = Failed, `6` = Queued |
-| `subject` | `xs:string` | No | Message subject. For SMS this is almost universally the literal string `"null"`. | Any string, typically `"null"` |
-| `body` | `xs:string` | Yes | Full text content of the message. May contain XML entity-escaped characters. | Any string |
-| `toa` | `xs:string` | No | Type of Address for the destination. Typically unused and set to `"null"`. | Any string, typically `"null"` |
-| `sc_toa` | `xs:string` | No | Type of Address for the service center. Typically unused and set to `"null"`. | Any string, typically `"null"` |
-| `service_center` | `xs:string` | No | SMSC (Short Message Service Center) number that routed the message. Present for received messages, typically `"null"` for sent messages. | Phone number string or `"null"` |
-| `read` | `xs:unsignedByte` | Yes | Whether the message has been read by the user. | `0` = Unread, `1` = Read |
-| `status` | `xs:byte` | Yes | Delivery status of the message. | `-1` = None, `0` = Complete, `32` = Pending, `64` = Failed |
-| `locked` | `xs:unsignedByte` | No | Whether the message is locked (protected from deletion). | `0` = Unlocked, `1` = Locked |
-| `date_sent` | `xs:unsignedLong` | No | Timestamp when the message was sent, in epoch milliseconds. Distinct from `date`, which records the received time. May be `0` if unavailable. | Integer (as string) |
-| `sub_id` | not in XSD | No | Identifies which SIM subscription (slot) handled the message. Format is device-dependent. | Small integers like `0`, `1`, `2` or a full SIM ICCID string |
-| `readable_date` | `xs:string` | No | Human-friendly rendering of the `date` field. Only present when the "Add Readable Date" preference is enabled at backup time. Format depends on the user's configured date format setting. | e.g. `"Nov 20, 2006 6:21:00 PM"` |
-| `contact_name` | `xs:string` | No | Display name from the phone's contacts database for the `address`. Only present when the preference is enabled and a matching contact exists. Unknown contacts appear as `"(Unknown)"`. | Any string |
+| `address` | `xs:string` | Yes | Phone number of the sender or recipient. Format varies by carrier and locale (may include country code, spaces, dashes, or leading `+`). | Phone number string |
+| `date` | `xs:unsignedLong` | Yes | Timestamp in Java epoch milliseconds. See [§8](#8-date-handling). | Millisecond epoch integer |
+| `type` | `xs:unsignedByte` | Yes | Message direction/disposition. See [§7.1](#71-sms-type). | `1`–`6` |
+| `subject` | `xs:string` | No | Message subject line. Rarely used for SMS; more common in MMS. | Any string or `"null"` |
+| `body` | `xs:string` | Yes | Message text content. | Any string |
+| `toa` | `xs:string` | No | Type of Address. BCD encoding indicator for the address field. | Typically `"null"` |
+| `sc_toa` | `xs:string` | No | Service Center Type of Address. BCD encoding indicator for the SMSC number. | Typically `"null"` |
+| `service_center` | `xs:string` | No | SMSC (Short Message Service Center) number that routed the message. | Phone number string or `"null"` |
+| `read` | `xs:unsignedByte` | Yes | Read status. See [§7.3](#73-smsmms-read). | `0` or `1` |
+| `status` | `xs:byte` | Yes | Delivery status. See [§7.2](#72-sms-status). | `-1`, `0`, `32`, `64` |
+| `locked` | `xs:unsignedByte` | No | Whether the message is locked (protected from deletion). | `0` = unlocked, `1` = locked |
+| `date_sent` | `xs:unsignedLong` | No | Sender-side timestamp in Java epoch milliseconds. See [§8.3](#83-date-vs-date_sent). | Millisecond epoch integer or `0` |
+| `sub_id` | `xs:string` | No | SIM subscription ID. Identifies which SIM handled the message on dual-SIM devices. | Index integer or full SIM ID string |
+| `readable_date` | `xs:string` | No | Human-friendly date rendering. Present only when enabled in backup preferences. | Formatted date string |
+| `contact_name` | `xs:string` | No | Contact display name matched to the `address` field. Present only when enabled. | Any string |
 
----
+<a name="5-mms-fields" id="5-mms-fields"></a>
+<hr class="print-page-break">
 
-## MMS Fields
+## 5. MMS Fields
 
-Each `<mms>` element carries metadata as XML attributes and contains nested
-`<parts>` and `<addrs>` child structures. The attribute set is significantly
-larger than SMS because MMS inherits fields from the underlying Android MMS
-provider database and the WAP MMS specification.
+<a name="51-mms-record-attributes" id="51-mms-record-attributes"></a>
+### 5.1. MMS Record Attributes
 
-| Field | XSD Type | Required | Description | Valid Values |
-|-------|----------|----------|-------------|--------------|
-| `date` | `xs:unsignedLong` | Yes | Timestamp in epoch milliseconds for when the message was sent or received. | Integer (as string) |
-| `ct_t` | `xs:string` | Yes | Top-level Content-Type of the MMS message. | Typically `"application/vnd.wap.multipart.related"` or `"application/vnd.wap.multipart.mixed"` |
-| `msg_box` | `xs:unsignedByte` | Yes | Mailbox folder the message belongs to. Equivalent to SMS `type`. | `1` = Received, `2` = Sent, `3` = Draft, `4` = Outbox |
-| `rr` | `xs:unsignedByte` | Yes | Read report request flag. Indicates whether a read receipt was requested. | Integer value |
-| `sub` | `xs:string` | No | Subject line of the MMS message, if one was provided by the sender. | Any string |
-| `read_status` | `xs:string` | Yes | Read status of the message in the MMS protocol sense. | String value |
-| `address` | `xs:long` | Yes | Phone number of the primary sender or recipient. Note the XSD types this as `xs:long`, though in practice it contains phone number strings. | Phone number |
-| `m_id` | `xs:string` | Yes | Globally unique Message-ID assigned by the MMS service center. Used for tracking and deduplication. | String identifier |
-| `read` | `xs:unsignedByte` | Yes | Whether the user has read this message. | `0` = Unread, `1` = Read |
-| `m_size` | `xs:string` | Yes | Total size of the MMS message in bytes, as reported by the carrier. | Numeric string |
-| `m_type` | `xs:unsignedByte` | Yes | MMS message type code as defined by the WAP MMS specification (OMA-WAP-MMS). Indicates whether this is a send request, delivery indication, notification, etc. | Integer per MMS spec (e.g. `128` = Send Request, `132` = Retrieve Confirmation) |
-| `text_only` | `xs:unsignedByte` | No | Flag indicating the MMS contains only text parts with no media attachments. | `0` = Has media, `1` = Text only |
-| `retr_st` | `xs:string` | Yes | Retrieval status from the MMS server. | String value |
-| `ct_cls` | `xs:string` | Yes | Content class of the MMS, defining the category of content allowed. | String value |
-| `sub_cs` | `xs:string` | Yes | Character set encoding used for the subject field. | Charset identifier string |
-| `ct_l` | `xs:string` | Yes | Content-Location URI where the MMS content can be retrieved. | URI string |
-| `tr_id` | `xs:string` | Yes | Transaction ID used to correlate MMS protocol exchanges between client and server. | String identifier |
-| `st` | `xs:string` | Yes | MMS delivery status. | String value |
-| `m_cls` | `xs:string` | Yes | Message class (e.g. personal, advertisement, informational, auto). | String, typically `"personal"` |
-| `d_tm` | `xs:string` | Yes | Delivery time. | String value |
-| `retr_txt_cs` | `xs:string` | Yes | Character set for the retrieval text. | Charset identifier string |
-| `d_rpt` | `xs:unsignedByte` | Yes | Delivery report request flag. Indicates whether a delivery confirmation was requested. | Integer value |
-| `date_sent` | `xs:unsignedByte` | Yes | Timestamp when the message was sent. Note the XSD types this as `xs:unsignedByte`, which is likely an error in the schema -- real values are epoch milliseconds. | Integer (as string) |
-| `seen` | `xs:unsignedByte` | Yes | Whether the message notification has been seen by the user (distinct from `read`). | `0` = Not seen, `1` = Seen |
-| `v` | `xs:unsignedByte` | Yes | MMS specification version number used by this message. | Integer (e.g. `18` for version 1.2) |
-| `exp` | `xs:string` | Yes | Expiry duration or timestamp for the message on the MMS server. | Numeric string (seconds) |
-| `pri` | `xs:unsignedByte` | Yes | Priority level of the message. | `128` = Normal, `129` = High, `130` = Low (per MMS spec) |
-| `resp_txt` | `xs:string` | Yes | Response text from the MMS server. | String value |
-| `rpt_a` | `xs:string` | Yes | Report allowed flag. | String value |
-| `locked` | `xs:unsignedByte` | Yes | Whether the message is locked against deletion. | `0` = Unlocked, `1` = Locked |
-| `retr_txt` | `xs:string` | Yes | Retrieval text accompanying the message from the MMS server. | String value |
-| `resp_st` | `xs:string` | Yes | Response status code from the MMS server. | String value |
-| `sim_slot` | not in XSD | No | SIM card slot identifier. Not present in the official XSD but appears in real backups. | String value |
-| `readable_date` | `xs:string` | No | Human-readable date string. Only present when the preference is enabled. | Formatted date string |
-| `contact_name` | `xs:string` | No | Contact display name for the address. Only present when the preference is enabled. | Any string |
+<div style="text-align:justify">
 
----
+Each `<mms>` element carries its metadata as XML attributes. Additionally, it contains nested `<parts>` and (optionally) `<addrs>` child elements. The MMS attribute set is substantially larger than SMS, reflecting the complexity of the MMS protocol (OMA MMS Encapsulation).
 
-## MMS Part Fields
-
-Each `<part>` element inside `<parts>` represents one component of a multipart
-MMS message. A single MMS typically contains at minimum a SMIL layout
-descriptor and one or more content parts (text, image, audio, video).
+</div>
 
 | Field | XSD Type | Required | Description | Valid Values |
 |-------|----------|----------|-------------|--------------|
-| `seq` | `xs:byte` | Yes | Sequence number controlling the order of parts within the message. Parts are ordered by ascending `seq` value. | Integer starting at `-1` or `0` |
-| `ct` | `xs:string` | Yes | MIME content type of this part. Determines how the part should be interpreted. | See common content types below |
-| `name` | `xs:string` | Yes | Name of the part, often derived from the original filename. May be `"null"` if not applicable. | Filename string or `"null"` |
-| `chset` | `xs:string` | Yes | Character set encoding for text-based parts. Common values reference IANA charset numbers. | Charset number (e.g. `"106"` for UTF-8) or `"null"` |
-| `cd` | `xs:string` | Yes | Content-Disposition header value. Indicates how the part should be presented. | `"null"` or disposition string |
-| `fn` | `xs:string` | Yes | Filename for the part, as specified in the content headers. May differ from `name`. | Filename string or `"null"` |
-| `cid` | `xs:string` | Yes | Content-ID used to reference this part from the SMIL layout or other parts. | Identifier string (e.g. `"<text_0>"`) |
-| `cl` | `xs:string` | Yes | Content-Location providing a URI-like identifier for the part. | Location string (e.g. `"text_0.txt"`) |
+| `date` | `xs:unsignedLong` | Yes | Timestamp in Java epoch milliseconds. | Millisecond epoch integer |
+| `ct_t` | `xs:string` | Yes | Content-Type of the MMS message. | Typically `"application/vnd.wap.multipart.related"` |
+| `msg_box` | `xs:unsignedByte` | Yes | Message box (folder). See [§7.4](#74-mms-message-box). | `1`–`4` |
+| `rr` | `xs:unsignedByte` | Yes | Read report request. `128` = requested, `129` = not requested. | `128` or `129` |
+| `read_status` | `xs:unsignedByte` | No | Read report status from the recipient side. | Integer |
+| `address` | `xs:string` | Yes | Primary address (sender or recipient). On MMS, the XSD types this as `xs:long`, but real-world values contain phone number strings. | Phone number string |
+| `m_id` | `xs:string` | Yes | Message ID assigned by the MMS gateway. Globally unique identifier for the MMS transaction. | URI-style string |
+| `read` | `xs:unsignedByte` | Yes | Local read status. See [§7.3](#73-smsmms-read). | `0` or `1` |
+| `m_size` | `xs:string` | No | Message size in bytes as reported by the gateway. | Integer string |
+| `m_type` | `xs:unsignedByte` | Yes | MMS message type (PDU type). `128` = send request, `132` = retrieve confirmation. | Integer |
+| `retr_st` | `xs:unsignedByte` | No | Retrieve status code. `0` usually indicates success. | Integer |
+| `ct_cls` | `xs:unsignedByte` | No | Content class. | Integer |
+| `sub_cs` | `xs:string` | No | Subject character set (IANA number). | Integer string |
+| `ct_l` | `xs:string` | No | Content-Location. URL from which the MMS content was retrieved. | URL string |
+| `tr_id` | `xs:string` | Yes | Transaction ID for the MMS exchange. | String |
+| `st` | `xs:unsignedByte` | No | Delivery status. | Integer |
+| `m_cls` | `xs:string` | No | Message class (e.g., `"personal"`, `"advertisement"`). | String |
+| `d_tm` | `xs:string` | No | Delivery time. | Epoch string |
+| `retr_txt_cs` | `xs:unsignedByte` | No | Retrieve text character set. | Integer |
+| `d_rpt` | `xs:unsignedByte` | No | Delivery report requested. `128` = requested. | `128` or `129` |
+| `date_sent` | `xs:unsignedLong` | No | Sender-side timestamp. See [§8.3](#83-date-vs-date_sent). | Millisecond epoch integer or `0` |
+| `seen` | `xs:unsignedByte` | No | Whether the notification was seen. | `0` or `1` |
+| `v` | `xs:unsignedByte` | No | MMS version. | Integer |
+| `exp` | `xs:string` | No | Message expiry time. | Epoch string |
+| `pri` | `xs:unsignedByte` | No | Priority. `128` = low, `129` = normal, `130` = high. | `128`, `129`, or `130` |
+| `resp_txt` | `xs:string` | No | Response text from the gateway. | String |
+| `rpt_a` | `xs:unsignedByte` | No | Report allowed flag. | Integer |
+| `locked` | `xs:unsignedByte` | No | Locked status. | `0` or `1` |
+| `retr_txt` | `xs:string` | No | Retrieve text. | String |
+| `resp_st` | `xs:unsignedByte` | No | Response status from the gateway. | Integer |
+| `text_only` | `xs:unsignedByte` | No | Whether the MMS contains only text parts (no media). | `0` or `1` |
+| `sub` | `xs:string` | No | Message subject. | Any string |
+| `sub_id` | `xs:string` | No | SIM subscription ID. | Index integer or full SIM ID string |
+| `readable_date` | `xs:string` | No | Human-friendly date rendering. Present only when enabled. | Formatted date string |
+| `contact_name` | `xs:string` | No | Contact display name. Present only when enabled. | Any string |
+
+<a name="52-mms-part-fields" id="52-mms-part-fields"></a>
+### 5.2. MMS Part Fields
+
+<div style="text-align:justify">
+
+Each `<part>` element inside `<parts>` represents one component of the MMS message. A typical MMS contains at least a SMIL layout part and one content part (text or media).
+
+</div>
+
+| Field | XSD Type | Required | Description | Valid Values |
+|-------|----------|----------|-------------|--------------|
+| `seq` | `xs:byte` | Yes | Sequence number controlling the display order of parts. | Integer (starting from `-1` or `0`) |
+| `ct` | `xs:string` | Yes | MIME content type of this part. | MIME type string (e.g., `"text/plain"`, `"image/jpeg"`) |
+| `name` | `xs:string` | Yes | Part name, often derived from the original filename. | String or `"null"` |
+| `chset` | `xs:string` | Yes | Character set as an IANA number (e.g., `"106"` for UTF-8). | Integer string or `"null"` |
+| `cd` | `xs:string` | Yes | Content-Disposition header value. | String or `"null"` |
+| `fn` | `xs:string` | Yes | Filename from content headers. | String or `"null"` |
+| `cid` | `xs:string` | Yes | Content-ID for referencing this part from SMIL layout. | String or `"null"` |
+| `cl` | `xs:string` | Yes | Content-Location identifier. | String or `"null"` |
 | `ctt_s` | `xs:string` | Yes | Content-Type start parameter. Identifies the root part of the multipart message. | String or `"null"` |
 | `ctt_t` | `xs:string` | Yes | Content-Type type parameter. Specifies the overall type of the multipart message. | String or `"null"` |
-| `text` | `xs:string` | Yes | Text content of the part. Populated for `text/plain` parts, typically `"null"` for binary parts. | Message text or `"null"` |
-| `data` | `xs:string` | No | Base64-encoded binary payload. Present for media parts (images, audio, video). Absent or empty for text-only parts. This field is the primary driver of large file sizes in MMS backups. | Base64 string |
+| `text` | `xs:string` | Yes | Text content of the part. Populated for `text/plain` parts; typically `"null"` for binary parts. | Message text or `"null"` |
+| `data` | `xs:string` | No | Base64-encoded binary payload. Present for media parts (images, audio, video). This field is the primary driver of large file sizes in MMS backups. | Base64 string |
 
-### Common MMS content types
+<a name="53-common-mms-content-types" id="53-common-mms-content-types"></a>
+### 5.3. Common MMS Content Types
 
 | MIME Type | Description |
 |-----------|-------------|
-| `application/smil` | SMIL (Synchronized Multimedia Integration Language) layout descriptor that controls how the MMS parts are presented. Nearly every MMS contains one. |
+| `application/smil` | SMIL (Synchronized Multimedia Integration Language) layout descriptor controlling how MMS parts are presented. Nearly every MMS contains one. |
 | `text/plain` | Plain text body of the message. The actual text is in the `text` attribute. |
 | `image/jpeg` | JPEG photograph or image. Binary data in the `data` attribute. |
 | `image/png` | PNG image. Binary data in the `data` attribute. |
@@ -177,53 +419,58 @@ descriptor and one or more content parts (text, image, audio, video).
 | `video/mp4` | MP4 video. Binary data in the `data` attribute. |
 | `video/3gpp` | 3GPP video, commonly recorded on older Android devices. |
 
----
+<a name="54-mms-address-fields" id="54-mms-address-fields"></a>
+### 5.4. MMS Address Fields
 
-## MMS Address Fields
+<div style="text-align:justify">
 
-Each `<addr>` element inside `<addrs>` identifies one participant in the MMS
-conversation. Group MMS messages have multiple `<addr>` entries -- one for each
-recipient and one for the sender.
+Each `<addr>` element inside `<addrs>` identifies one participant in the MMS conversation. Group MMS messages have multiple `<addr>` entries, one for each recipient and one for the sender.
+
+</div>
 
 | Field | XSD Type | Required | Description | Valid Values |
 |-------|----------|----------|-------------|--------------|
 | `address` | string | Yes | Phone number or email address of this participant. | Phone number or address string |
 | `type` | integer | Yes | Role of this participant in the message. Values correspond to the PduHeaders constants in the Android telephony stack. | `129` = BCC, `130` = CC, `137` = From, `151` = To |
-| `charset` | integer | Yes | Character set identifier for this address entry. | Integer (e.g. `106` for UTF-8) |
+| `charset` | integer | Yes | Character set identifier for this address entry. | Integer (e.g., `106` for UTF-8) |
 
-**Important:** The `<addrs>` wrapper and its `<addr>` children are present in
-real-world backup exports but are **not defined** in the official XSD schema
-published by SyncTech. Parsers should expect them to be present but must not
-fail if they are absent.
+<div style="text-align:justify">
 
----
+The `<addrs>` wrapper and its `<addr>` children are present in real-world backup exports but are not defined in the official XSD schema published by SyncTech. Parsers MUST expect them to be present but MUST NOT fail if they are absent.
 
-## Call Log Fields
+</div>
 
-Each `<call>` element represents one entry in the phone's call history. Like
-SMS, all data is carried in XML attributes with no child elements.
+<a name="6-call-log-fields" id="6-call-log-fields"></a>
+<hr class="print-page-break">
+
+## 6. Call Log Fields
+
+<div style="text-align:justify">
+
+Each `<call>` element represents one entry in the phone's call history. Like SMS, all data is carried in XML attributes with no child elements.
+
+</div>
 
 | Field | XSD Type | Required | Description | Valid Values |
 |-------|----------|----------|-------------|--------------|
 | `number` | string | Yes | Phone number associated with the call. May include country code prefixes. | Phone number string |
 | `duration` | integer | Yes | Length of the call in seconds. `0` for missed or rejected calls. | Non-negative integer |
-| `date` | unsigned long | Yes | Timestamp of the call in epoch milliseconds. | Integer (as string) |
-| `type` | integer | Yes | Direction and disposition of the call. | `1` = Incoming, `2` = Outgoing, `3` = Missed, `4` = Voicemail, `5` = Rejected, `6` = Refused List |
-| `presentation` | integer | No | Caller ID presentation mode. Indicates whether the remote party's identity was available. | `1` = Allowed, `2` = Restricted, `3` = Unknown, `4` = Payphone |
-| `subscription_id` | string | No | Identifies the SIM subscription that handled the call. Format varies across devices -- some use simple indices (`0`, `1`, `2`) while others record the full SIM ICCID string. | Index integer or full SIM ID string |
-| `readable_date` | string | No | Human-friendly date rendering. Only present when enabled in backup preferences. | Formatted date string |
-| `contact_name` | string | No | Contact display name matched to the `number` field. Only present when enabled. | Any string |
+| `date` | `xs:unsignedLong` | Yes | Timestamp in Java epoch milliseconds. See [§8](#8-date-handling). | Millisecond epoch integer |
+| `type` | integer | Yes | Call direction/disposition. See [§7.6](#76-call-type). | `1`–`6` |
+| `presentation` | integer | Yes | Caller ID presentation status. See [§7.7](#77-call-presentation). | `1`–`4` |
+| `subscription_id` | string | No | SIM subscription that handled the call. On dual-SIM devices, this distinguishes which line was used. | Index integer or full SIM ID string |
+| `readable_date` | string | No | Human-friendly date rendering. Present only when enabled in backup preferences. | Formatted date string |
+| `contact_name` | string | No | Contact display name matched to the `number` field. Present only when enabled. | Any string |
 
-**Note:** Call logs use a separate `<calls>` root element and are stored in
-their own XML file. The official XSD only covers the `<smses>` root element.
-The `<calls>` structure is confirmed by the `calls.xsl` stylesheet distributed
-by SyncTech and by real-world backup files.
+> **Note:** Call logs use a separate `<calls>` root element and are stored in their own XML file. The official XSD only covers the `<smses>` root element. The `<calls>` structure is confirmed by the `calls.xsl` stylesheet distributed by SyncTech and by real-world backup files.
 
----
+<a name="7-enum-reference" id="7-enum-reference"></a>
+<hr class="print-page-break">
 
-## Enum Reference Tables
+## 7. Enum Reference
 
-### SMS type
+<a name="71-sms-type" id="71-sms-type"></a>
+### 7.1. SMS Type
 
 | Value | Meaning |
 |-------|---------|
@@ -234,7 +481,26 @@ by SyncTech and by real-world backup files.
 | `5` | Failed |
 | `6` | Queued |
 
-### MMS msg_box
+<a name="72-sms-status" id="72-sms-status"></a>
+### 7.2. SMS Status
+
+| Value | Meaning |
+|-------|---------|
+| `-1` | None (no delivery status available) |
+| `0` | Complete (delivered successfully) |
+| `32` | Pending (delivery in progress) |
+| `64` | Failed (delivery failed) |
+
+<a name="73-smsmms-read" id="73-smsmms-read"></a>
+### 7.3. SMS/MMS Read
+
+| Value | Meaning |
+|-------|---------|
+| `0` | Unread |
+| `1` | Read |
+
+<a name="74-mms-message-box" id="74-mms-message-box"></a>
+### 7.4. MMS Message Box
 
 | Value | Meaning |
 |-------|---------|
@@ -243,7 +509,18 @@ by SyncTech and by real-world backup files.
 | `3` | Draft |
 | `4` | Outbox |
 
-### Call type
+<a name="75-mms-address-type" id="75-mms-address-type"></a>
+### 7.5. MMS Address Type
+
+| Value | Meaning |
+|-------|---------|
+| `129` | BCC |
+| `130` | CC |
+| `137` | From |
+| `151` | To |
+
+<a name="76-call-type" id="76-call-type"></a>
+### 7.6. Call Type
 
 | Value | Meaning |
 |-------|---------|
@@ -254,16 +531,8 @@ by SyncTech and by real-world backup files.
 | `5` | Rejected |
 | `6` | Refused List |
 
-### MMS addr type
-
-| Value | Meaning |
-|-------|---------|
-| `129` | BCC |
-| `130` | CC |
-| `137` | From |
-| `151` | To |
-
-### Call presentation
+<a name="77-call-presentation" id="77-call-presentation"></a>
+### 7.7. Call Presentation
 
 | Value | Meaning |
 |-------|---------|
@@ -272,30 +541,22 @@ by SyncTech and by real-world backup files.
 | `3` | Unknown |
 | `4` | Payphone |
 
-### SMS status
+<a name="8-date-handling" id="8-date-handling"></a>
+<hr class="print-page-break">
 
-| Value | Meaning |
-|-------|---------|
-| `-1` | None (no delivery status available) |
-| `0` | Complete (delivered successfully) |
-| `32` | Pending (delivery in progress) |
-| `64` | Failed (delivery failed) |
+## 8. Date Handling
 
-### SMS/MMS read
+<a name="81-epoch-format" id="81-epoch-format"></a>
+### 8.1. Epoch Format
 
-| Value | Meaning |
-|-------|---------|
-| `0` | Unread |
-| `1` | Read |
+<div style="text-align:justify">
 
----
+All timestamp fields (`date`, `date_sent`) use Java epoch milliseconds: the number of milliseconds elapsed since 1970-01-01 00:00:00 UTC.
 
-## Date Handling
+</div>
 
-All timestamp fields (`date`, `date_sent`) use **Java epoch milliseconds** --
-the number of milliseconds elapsed since 1970-01-01 00:00:00 UTC.
-
-### Conversion
+<a name="82-conversion" id="82-conversion"></a>
+### 8.2. Conversion
 
 To obtain a standard Unix timestamp (seconds), divide by 1000:
 
@@ -311,188 +572,434 @@ dt = datetime.fromtimestamp(date_ms / 1000, tz=timezone.utc)
 iso_str = dt.isoformat()
 ```
 
-In Excel, the formula `=(date_ms / 86400000) + 25569` converts to an Excel
-date serial number (format the cell as date/time afterward).
+In Excel, the formula `=(date_ms / 86400000) + 25569` converts to an Excel date serial number (format the cell as date/time afterward).
 
-### date vs date_sent
+<a name="83-date-vs-date_sent" id="83-date-vs-date_sent"></a>
+### 8.3. date vs date_sent
 
-These are distinct fields serving different purposes:
+<div style="text-align:justify">
 
-- **`date`** -- the timestamp recorded by the local device. For received
-  messages, this is when the message arrived. For sent messages, this is
-  typically when the message was dispatched.
-- **`date_sent`** -- the timestamp from the originating device or network.
-  For received messages, this reflects when the sender actually sent it.
-  May be `0` or absent if the network did not provide the information.
+These are distinct fields serving different purposes. `date` is the timestamp recorded by the local device. For received messages, this is when the message arrived. For sent messages, this is typically when the message was dispatched. `date_sent` is the timestamp from the originating device or network. For received messages, this reflects when the sender actually sent it. The value MAY be `0` or absent if the network did not provide the information.
 
-### readable_date
+</div>
 
-This optional field contains a locale-formatted date string generated at
-backup time. The format is controlled by the app's "Readable Date Format"
-setting and varies between users. The app added ISO 8601 as a format option
-in v10.19.010. Because the format is user-configurable and locale-dependent,
-parsers should prefer computing dates from the numeric `date` field rather
-than parsing `readable_date`.
+<a name="84-readable_date" id="84-readable_date"></a>
+### 8.4. readable_date
 
----
+<div style="text-align:justify">
 
-## MMS Structure Details
+This optional field contains a locale-formatted date string generated at backup time. The format is controlled by the app's "Readable Date Format" setting and varies between users. Parsers SHOULD NOT rely on this field for programmatic date operations; use the `date` epoch value instead.
 
-MMS messages have a nested structure that differs fundamentally from the flat
-attributes of SMS and call log records.
+</div>
 
-### Parts
+<a name="85-computed-date_iso-field" id="85-computed-date_iso-field"></a>
+### 8.5. Computed date_iso Field
 
-The `<parts>` wrapper contains one or more `<part>` elements representing the
-individual components of the multipart message:
+<div style="text-align:justify">
 
-- **SMIL part** (`application/smil`): A layout descriptor that defines how the
-  other parts should be arranged on screen. Present in virtually all MMS
-  messages. The XSL viewer skips this part during display.
-- **Text part** (`text/plain`): The human-readable text body. The text content
-  is stored in the `text` attribute (not in the element's text content or
-  `data` attribute).
-- **Media parts** (images, audio, video): Binary content is base64-encoded in
-  the `data` attribute. A single MMS may contain multiple media parts. These
-  are the primary contributors to large backup file sizes.
+The parser injects a computed `date_iso` field (ISO 8601, UTC) derived from the `date` attribute on every record. This is a convenience field for human readability and tooling interoperability. It is not present in the upstream XML. Injection is enabled by default and can be suppressed with the `--no-date-iso` CLI flag (see [§12.3](#123-parse-subcommand)).
 
-### Addresses
+</div>
 
-The `<addrs>` wrapper contains `<addr>` elements enumerating all participants:
+<a name="9-xsd-known-issues" id="9-xsd-known-issues"></a>
+<hr class="print-page-break">
 
-- For a standard two-party MMS, expect one `From` (type `137`) and one `To`
-  (type `151`) address entry.
-- For group MMS, there will be one `From` entry and multiple `To` entries
-  (one per recipient).
-- The `BCC` (type `129`) and `CC` (type `130`) types exist in the enum but
-  are rarely encountered in practice.
+## 9. XSD Known Issues
 
-### Example MMS structure
+<a name="91-missing-definitions" id="91-missing-definitions"></a>
+### 9.1. Missing Definitions
 
-```xml
-<mms date="1609459200000" msg_box="1" address="+15551234567"
-     ct_t="application/vnd.wap.multipart.related" read="1" ...>
-  <parts>
-    <part seq="0" ct="application/smil" text="&lt;smil>...&lt;/smil>" />
-    <part seq="0" ct="text/plain" text="Hello, world!" />
-    <part seq="0" ct="image/jpeg" cl="image.jpg" data="[base64 data]" />
-  </parts>
-  <addrs>
-    <addr address="+15559876543" type="137" charset="106" />
-    <addr address="+15551234567" type="151" charset="106" />
-  </addrs>
-</mms>
+<div style="text-align:justify">
+
+The official XSD does not define the `<addrs>` wrapper element or its `<addr>` children within `<mms>`. Despite this omission, the `<addrs>` structure is consistently present in real backup files. The addr type enum values (`129`, `130`, `137`, `151`) are documented in the official field reference and MUST be supported.
+
+</div>
+
+<div style="text-align:justify">
+
+The XSD only describes the `<smses>` root element. Call log backups use a `<calls>` root element that is not covered by the XSD but is confirmed by the `calls.xsl` stylesheet and by real-world files.
+
+</div>
+
+<a name="92-type-mismatches" id="92-type-mismatches"></a>
+### 9.2. Type Mismatches
+
+Several XSD type declarations are incorrect or overly restrictive compared to real-world data:
+
+| Field | XSD Type | Actual Behavior |
+|-------|----------|-----------------|
+| MMS `address` | `xs:long` | Contains phone number strings (including `+` prefixes and non-numeric characters). |
+| MMS `date_sent` | `xs:unsignedByte` | Holds epoch millisecond values (large integers). |
+| Root `count` | `xs:unsignedShort` (max 65,535) | Backup files routinely contain far more records. |
+
+<div style="text-align:justify">
+
+Parsers MUST treat all attribute values as strings and perform type conversion explicitly rather than relying on the XSD type declarations.
+
+</div>
+
+<a name="93-rcs-and-advanced-messages" id="93-rcs-and-advanced-messages"></a>
+### 9.3. RCS and Advanced Messages
+
+<div style="text-align:justify">
+
+Newer versions of the app (v10.15.002+) support backing up RCS (Rich Communication Services) messages on selected devices, specifically those using Samsung Messages. These are stored within the same XML structure but MAY include additional attributes or edge cases not covered by the original schema.
+
+</div>
+
+<a name="94-backup-encryption" id="94-backup-encryption"></a>
+### 9.4. Backup Encryption
+
+<div style="text-align:justify">
+
+The Pro version of the app (v10.05.301+) can compress and encrypt backups using ZIP with AES-256 encryption. Encrypted backup files MUST be decrypted before XML parsing. The underlying XML format remains the same after decryption.
+
+</div>
+
+<a name="10-parser-architecture" id="10-parser-architecture"></a>
+<hr class="print-page-break">
+
+## 10. Parser Architecture
+
+<a name="101-streaming-parse" id="101-streaming-parse"></a>
+### 10.1. Streaming Parse
+
+<div style="text-align:justify">
+
+The parser uses `xml.etree.ElementTree.iterparse` with explicit `elem.clear()` calls to avoid loading the full DOM into memory. This is a hard architectural constraint: XML exports routinely reach multiple gigabytes. Refactoring to `ET.parse()` or other full-tree approaches is prohibited.
+
+</div>
+
+<a name="102-flat-attribute-extraction" id="102-flat-attribute-extraction"></a>
+### 10.2. Flat Attribute Extraction
+
+<div style="text-align:justify">
+
+SMS and call records map 1:1 from XML attributes to JSON object keys via `dict(elem.attrib)`. MMS records additionally collect nested `<part>` and `<addr>` child elements into `parts` and `addrs` arrays. This flat extraction pattern is intentional. ORM-style classes or dataclass wrappers are not used unless the project explicitly moves to that model.
+
+</div>
+
+<a name="103-output-modes" id="103-output-modes"></a>
+### 10.3. Output Modes
+
+<div style="text-align:justify">
+
+The parser supports two output modes. In separate mode (the default), the parser writes one JSON file per record type found in the input: `<stem>_sms.json`, `<stem>_mms.json`, and `<stem>_calls.json`. In combined mode (`--combined`), a single `<stem>.json` file is written containing top-level `sms`, `mms`, and `calls` arrays. Combined mode uses temporary per-section files that are assembled into the final output to handle interleaved record types without buffering the entire dataset in memory.
+
+</div>
+
+<a name="104-media-stripping" id="104-media-stripping"></a>
+### 10.4. Media Stripping
+
+<div style="text-align:justify">
+
+The `--strip-media` flag omits the `data` attribute from MMS `<part>` elements during extraction. This significantly reduces output file size for analytical use cases where the base64-encoded media content is not needed.
+
+</div>
+
+<a name="105-schema-validation" id="105-schema-validation"></a>
+### 10.5. Schema Validation
+
+<div style="text-align:justify">
+
+The `--validate` flag triggers a post-write validation pass against the project's JSON Schema (`sms-backup-restore.schema.json`). This requires the `jsonschema` package, which is declared as an optional dependency under the `[validate]` extra. Validation errors cause a non-zero exit code (see [§12.6](#126-exit-codes)).
+
+</div>
+
+<a name="11-json-output-format" id="11-json-output-format"></a>
+<hr class="print-page-break">
+
+## 11. JSON Output Format
+
+<a name="111-separate-mode" id="111-separate-mode"></a>
+### 11.1. Separate Mode
+
+<div style="text-align:justify">
+
+Each per-type file contains a top-level JSON array of record objects. The file naming convention is `<input_stem>_<type>.json`, where `<type>` is one of `sms`, `mms`, or `calls`. Files are only written for record types that are present in the input.
+
+</div>
+
+<a name="112-combined-mode" id="112-combined-mode"></a>
+### 11.2. Combined Mode
+
+The combined output file is a JSON object with three keys:
+
+```json
+{
+  "sms": [ ... ],
+  "mms": [ ... ],
+  "calls": [ ... ]
+}
 ```
 
----
+Empty arrays are included for record types not present in the input.
 
-## Known Quirks and Edge Cases
+<a name="113-json-schema" id="113-json-schema"></a>
+### 11.3. JSON Schema
 
-### Attribute presence varies by device
+<div style="text-align:justify">
 
-Field availability depends on the Android version, OEM customizations, and the
-messaging app providing data to the Android content provider. Some attributes
-documented in the XSD may be absent on certain devices, and undocumented
-attributes (like `sim_slot` on MMS, `sub_id` on SMS) may appear on others.
-Parsers should be tolerant of both missing and unexpected attributes.
+The file `sms-backup-restore.schema.json` at the repository root is a JSON Schema (draft-07) document that defines the expected structure of the parser's output. It covers all SMS, MMS (including parts and addrs), and call record fields with descriptions, types, enum constraints, and required-field declarations. The schema is the project's source of truth for field semantics. When the schema and the upstream documentation conflict, the schema takes precedence.
 
-### The string "null"
+</div>
 
-Android's content provider frequently stores SQL NULL values as the literal
-four-character string `"null"` in XML attributes. This is **not** the absence
-of the attribute -- it is a string value that reads `null`. Parsers must
-distinguish between a missing attribute, an empty string `""`, and the literal
-`"null"` string. Fields commonly affected: `subject`, `toa`, `sc_toa`,
-`service_center`, `name`, `fn`, `cd`, `cid`, `cl`, `ctt_s`, `ctt_t`.
+<a name="12-cli-interface" id="12-cli-interface"></a>
+<hr class="print-page-break">
 
-### readable_date format inconsistency
+## 12. CLI Interface
 
-The `readable_date` field format is controlled by user preferences and varies
-across backups. It may be locale-specific (`"Nov 20, 2006 6:21:00 PM"`),
-ISO 8601 (`"2006-11-20T18:21:00"`), or any other format the user selected.
-Do not rely on a specific format for parsing.
+<a name="121-command-structure" id="121-command-structure"></a>
+### 12.1. Command Structure
 
-### contact_name availability
+<div style="text-align:justify">
 
-This field is only populated when the user had the "Add Contact Name"
-preference enabled at backup time AND the phone number matched an entry in
-the device's contact database. For numbers with no matching contact, the
-value is `"(Unknown)"`. When the preference is disabled, the attribute is
-entirely absent.
+The CLI uses `argparse` with full subcommand support. The top-level command is `sms-backup-parser`. Three subcommands are available: `parse`, `report`, and `version`.
 
-### Emoji and special characters
+</div>
 
-Message bodies (`body` for SMS, `text` for MMS parts) may contain emoji and
-other multi-byte Unicode characters. Some XML viewers and parsers may not
-render these correctly. The backup files use UTF-8 encoding, which handles
-emoji natively, but downstream tools that assume ASCII or Latin-1 will
-malfunction.
+<a name="122-global-flags" id="122-global-flags"></a>
+### 12.2. Global Flags
 
-### XML entity escaping
+| Flag | Description |
+|------|-------------|
+| `-v` / `--verbose` | Increase output verbosity. Shows per-record detail, file paths, and extended timing. |
+| `-q` / `--quiet` | Suppress all non-error output. Only fatal errors are printed to stderr. |
 
-Text content in `body` and `text` attributes uses standard XML entity escaping:
+These flags are mutually exclusive and MUST appear before the subcommand name.
 
-| Entity | Character |
-|--------|-----------|
-| `&amp;` | `&` (ampersand) |
-| `&lt;` | `<` (less-than) |
-| `&gt;` | `>` (greater-than) |
-| `&quot;` | `"` (double quote) |
-| `&#13;` | Carriage return |
-| `&#10;` | Line feed |
+<a name="123-parse-subcommand" id="123-parse-subcommand"></a>
+### 12.3. parse Subcommand
 
-Some T-Mobile firmware has been observed to produce `\r\n` (CRLF) line endings
-within message bodies, while most Android devices use `\n` (LF) alone.
+```
+sms-backup-parser parse [options] <input> [<input> ...]
+```
 
-### sub_id and subscription_id format variance
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-o` / `--output-dir DIR` | Same directory as input | Directory for output JSON files (created if missing). |
+| `--combined` | Off | Write a single combined JSON file instead of per-type files. |
+| `--strip-media` | Off | Omit base64-encoded media data from MMS parts. |
+| `--no-date-iso` | Off | Skip injection of computed `date_iso` fields. |
+| `--validate` | Off | Validate output against the JSON Schema after writing. Requires `[validate]` extra. |
+| `--pretty` | On | Pretty-print JSON with 2-space indentation. |
+| `--compact` | Off | Write compact JSON with no whitespace. Mutually exclusive with `--pretty`. |
 
-The SIM identification fields (`sub_id` on SMS, `subscription_id` on call logs)
-have inconsistent formats across devices:
+<a name="124-report-subcommand" id="124-report-subcommand"></a>
+### 12.4. report Subcommand
 
-- Some phones use simple zero-based indices: `0`, `1`, `2`
-- Other phones record the full SIM ICCID or subscription identifier string
-- Single-SIM devices may omit the field entirely
+```
+sms-backup-parser report [options] <input> [<input> ...]
+```
 
-### MMS addr elements not in official XSD
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-t` / `--type TYPE` | `summary` | Report type: `summary`, `contacts`, `timeline`, or `all`. |
+| `-o` / `--output FILE` | stdout | File path to write the report. |
+| `--format FORMAT` | `text` | Output format: `text`, `csv`, or `json`. |
+| `--top-n N` | `20` | Number of entries in ranked reports. |
 
-The official XSD schema defines the `<parts>` structure within MMS but does
-**not** include the `<addrs>` wrapper or its `<addr>` children. Despite this
-omission, the `<addrs>` structure is consistently present in real backup files.
-The addr type enum (129, 130, 137, 151) is documented in the official field
-reference and must be supported.
+<a name="125-version-subcommand" id="125-version-subcommand"></a>
+### 12.5. version Subcommand
 
-### Call logs use a separate root element
+```
+sms-backup-parser version
+```
 
-The official XSD schema only describes the `<smses>` root element. Call log
-backups use a `<calls>` root element that is **not covered by the XSD** but is
-confirmed by the `calls.xsl` stylesheet and by real-world files. The `calls.xsl`
-template matches on `calls/call`, confirming the element hierarchy.
+Prints the installed version number and exits.
 
-### XSD type mismatches
+<a name="126-exit-codes" id="126-exit-codes"></a>
+### 12.6. Exit Codes
 
-Several XSD type declarations appear incorrect or overly restrictive compared
-to real-world data:
+| Code | Meaning |
+|------|---------|
+| `0` | Success. |
+| `1` | User error (bad arguments, missing files, missing dependencies). |
+| `2` | Parse or data error (malformed XML, validation failure). |
 
-- MMS `address` is typed as `xs:long` but contains phone number strings
-  (including `+` prefixes and non-numeric characters)
-- MMS `date_sent` is typed as `xs:unsignedByte` but holds epoch millisecond
-  values in practice
-- The root `count` attribute is typed as `xs:unsignedShort` (max 65535) but
-  backup files routinely contain far more records
+<a name="13-report-types" id="13-report-types"></a>
+<hr class="print-page-break">
 
-Parsers should treat all attribute values as strings and perform type
-conversion explicitly rather than relying on the XSD type declarations.
+## 13. Report Types
 
-### RCS / Advanced Messages
+<a name="131-summary-report" id="131-summary-report"></a>
+### 13.1. Summary Report
 
-Newer versions of the app (v10.15.002+) support backing up RCS (Rich
-Communication Services) messages on selected devices, specifically those using
-Samsung Messages. These are stored within the same XML structure but may
-include additional attributes or edge cases not covered by the original schema.
+<div style="text-align:justify">
 
-### Backup encryption (Pro)
+The summary report provides aggregate statistics across all records in the input files. It includes total counts by record type (SMS, MMS, calls), date range (earliest and latest record), breakdown by direction (sent/received for messages, incoming/outgoing/missed for calls), message read/unread counts, MMS media vs. text-only counts, unique contact count, and total call duration.
 
-The Pro version of the app (v10.05.301+) can compress and encrypt backups
-using ZIP with AES-256 encryption. Encrypted backup files must be decrypted
-before XML parsing. The underlying XML format remains the same after
-decryption.
+</div>
+
+<a name="132-contacts-report" id="132-contacts-report"></a>
+### 13.2. Contacts Report
+
+<div style="text-align:justify">
+
+The contacts report ranks contacts by message and call volume. The number of entries is controlled by `--top-n` (default: 20). For each contact, it reports the phone number, contact name (if available), SMS received/sent counts, MMS received/sent counts, call counts by direction, total call duration, and first/last activity dates.
+
+</div>
+
+<a name="133-timeline-report" id="133-timeline-report"></a>
+### 13.3. Timeline Report
+
+<div style="text-align:justify">
+
+The timeline report aggregates message and call activity by date. Each row reports the date, SMS count, MMS count, call count, and total call duration for that period.
+
+</div>
+
+<a name="14-repository-layout" id="14-repository-layout"></a>
+<hr class="print-page-break">
+
+## 14. Repository Layout
+
+```
+.
+├── CLAUDE.md                          # Claude Code agent instructions
+├── LICENSE                            # Apache License 2.0
+├── CHANGELOG.md                       # Keep a Changelog format
+├── README.md                          # Project overview and quick start
+├── .gitignore                         # VCS exclusions
+├── pyproject.toml                     # PEP 621 metadata, build config, tool settings
+├── mkdocs.yml                         # MkDocs documentation site config
+├── sms-backup-restore.schema.json     # JSON Schema (draft-07) — source of truth
+├── src/
+│   └── sms_backup_parser/             # Main package
+│       ├── __init__.py                # Package version
+│       ├── __main__.py                # python -m support
+│       ├── cli.py                     # argparse CLI entry point
+│       ├── parser.py                  # Streaming XML → JSON transformer
+│       ├── reports.py                 # Summary, contacts, and timeline reports
+│       ├── models.py                  # Enum constants and lookup tables
+│       ├── utils.py                   # Shared helpers (date conversion, formatting)
+│       ├── progress.py                # Progress reporting for long parses
+│       └── validate.py                # Optional JSON Schema validation
+├── tests/                             # pytest test suite
+│   ├── fixtures/                      # Synthetic XML test data
+│   ├── test_parser.py
+│   ├── test_cli.py
+│   ├── test_reports.py
+│   ├── test_utils.py
+│   └── test_models.py
+├── scripts/
+│   └── build.py                       # PyInstaller build script
+├── docs/                              # MkDocs documentation site (see §15)
+└── reference/
+    └── knowledge-base.md              # This document
+```
+
+<a name="15-documentation-site" id="15-documentation-site"></a>
+<hr class="print-page-break">
+
+## 15. Documentation Site
+
+<div style="text-align:justify">
+
+The project documentation is published as a static site built with [MkDocs](https://www.mkdocs.org/) using the [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme. This matches the toolchain established by shruggie-indexer and adopted across all ShruggieTech projects.
+
+</div>
+
+<a name="151-site-configuration" id="151-site-configuration"></a>
+### 15.1. Site Configuration
+
+The site is configured by `mkdocs.yml` at the repository root.
+
+| Setting | Value | Purpose |
+|---------|-------|---------|
+| <span style="white-space: nowrap;">`site_name`</span> | `SMS Backup & Restore Parser` | Displayed in the site header and browser title. |
+| <span style="white-space: nowrap;">`site_description`</span> | Project tagline for SEO and social metadata. | |
+| <span style="white-space: nowrap;">`site_url`</span> | The GitHub Pages URL for the project. | Base URL for canonical links and sitemap generation. |
+| <span style="white-space: nowrap;">`repo_url`</span> | `https://github.com/ShruggieTech/sms-backup-restore-parser` | Links to the source repository from the site header. |
+| <span style="white-space: nowrap;">`docs_dir`</span> | `docs` | MkDocs reads all documentation source from the `docs/` directory. |
+| <span style="white-space: nowrap;">`theme.name`</span> | `material` | Activates the Material for MkDocs theme. |
+| <span style="white-space: nowrap;">`theme.palette.scheme`</span> | `slate` | Dark mode enabled by default. |
+| <span style="white-space: nowrap;">`theme.features`</span> | Navigation tabs, instant loading, search highlighting, content tabs. | Provides a polished, responsive documentation experience. |
+
+Required Markdown extensions: `admonition`, `pymdownx.details`, `pymdownx.superfences`.
+
+<div style="text-align:justify">
+
+The `nav` key in `mkdocs.yml` defines the sidebar navigation structure explicitly rather than relying on directory auto-discovery. This ensures predictable ordering and human-readable section labels.
+
+</div>
+
+<a name="152-navigation-structure" id="152-navigation-structure"></a>
+### 15.2. Navigation Structure
+
+```yaml
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Schema Reference: schema.md
+  - XML Format Reference: xml-reference.md
+  - Reports: reports.md
+  - Changelog: changelog.md
+```
+
+<div style="text-align:justify">
+
+The XML Format Reference page presents the upstream format documentation from §3 through §9 of this specification in a form suitable for end-user consumption. It serves as a standalone reference for anyone working with the raw XML backup files, independent of this parser.
+
+</div>
+
+<a name="153-changelog-synchronization" id="153-changelog-synchronization"></a>
+### 15.3. Changelog Synchronization
+
+<div style="text-align:justify">
+
+The documentation site's changelog page (`docs/changelog.md`) is a copy of `CHANGELOG.md` at the repository root. The copy is maintained manually. The file begins with a header comment identifying it as auto-copied:
+
+</div>
+
+```markdown
+<!-- THIS FILE IS AUTO-COPIED FROM CHANGELOG.md AT THE REPOSITORY ROOT. -->
+<!-- DO NOT EDIT THIS FILE DIRECTLY. Edit CHANGELOG.md instead. -->
+```
+
+<div style="text-align:justify">
+
+The canonical changelog is `CHANGELOG.md` at the repository root. All edits are made there. When the documentation site is built or deployed, `docs/changelog.md` MUST reflect the current state of `CHANGELOG.md`. If the two files diverge, the root `CHANGELOG.md` is authoritative.
+
+</div>
+
+<a name="154-build-and-preview" id="154-build-and-preview"></a>
+### 15.4. Build and Preview
+
+| Command | Purpose |
+|---------|---------|
+| <span style="white-space: nowrap;">`mkdocs serve`</span> | Starts a local development server with live reload at `http://127.0.0.1:8000/`. |
+| <span style="white-space: nowrap;">`mkdocs build`</span> | Produces the static site in the `site/` directory. The `site/` directory is listed in `.gitignore` and is never committed. |
+
+<a name="155-deployment" id="155-deployment"></a>
+### 15.5. Deployment
+
+<div style="text-align:justify">
+
+The documentation site is deployed to GitHub Pages. The deployment mechanism (manual `mkdocs gh-deploy` or a GitHub Actions workflow) is configured at the repository level. When a CI workflow is used, it SHOULD trigger on push to `main` when files in `docs/` or `mkdocs.yml` change, build the site using `mkdocs build --strict`, and deploy the built `site/` directory to the `gh-pages` branch. The `--strict` flag ensures that broken internal links, missing navigation targets, and unreferenced pages cause build failures.
+
+</div>
+
+<a name="156-dependencies" id="156-dependencies"></a>
+### 15.6. Dependencies
+
+<div style="text-align:justify">
+
+`mkdocs` and `mkdocs-material` are declared as optional development dependencies in `pyproject.toml` under a `[project.optional-dependencies]` docs group:
+
+</div>
+
+```toml
+[project.optional-dependencies]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+]
+```
+
+<div style="text-align:justify">
+
+These packages are not required for using, developing, or testing the parser. They are required only for building or previewing the documentation site. Documentation authors install them with `pip install -e ".[docs]"`.
+
+</div>

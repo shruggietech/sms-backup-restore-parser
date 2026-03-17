@@ -1,0 +1,39 @@
+## Context
+
+Sprint: 20260317-001-Updates
+Project: sms-backup-restore-parser
+Spec: reference/knowledge-base.md
+
+## Active Section
+
+Section [N]: [Section Title]
+
+## Key References
+
+- Technical specification: reference/knowledge-base.md
+- Sprint plan: .handoff/plans/20260317-001-Updates.md
+- MkDocs config: mkdocs.yml
+- pyproject.toml: pyproject.toml
+- JSON Schema: sms-backup-restore.schema.json
+- CLAUDE.md: CLAUDE.md
+
+## Instructions
+
+You are implementing Section [N] of sprint 20260317-001-Updates.
+
+Read the sprint plan at `.handoff/plans/20260317-001-Updates.md` and execute the implementation instructions for Section [N]. Follow the affected files table and acceptance criteria precisely.
+
+Before making changes:
+1. Read the relevant spec sections noted in the Spec References table.
+2. Read each affected file to understand its current state.
+3. Make targeted, scoped edits. Do not restructure files beyond what the sprint section requires.
+
+After making changes:
+1. Verify each acceptance criterion.
+2. If this is the final section (Section 5), write the commit message as specified.
+
+## Constraints
+
+- UTF-8 encoding without BOM on all files.
+- Do not modify files outside the Affected Files table unless explicitly instructed.
+- If an acceptance criterion cannot be met, stop and report the blocker.
