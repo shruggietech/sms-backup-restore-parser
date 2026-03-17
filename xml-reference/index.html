@@ -1,0 +1,2347 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="CLI utility for parsing SyncTech SMS Backup & Restore XML exports">
+      
+      
+      
+        <link rel="canonical" href="https://shruggietech.github.io/sms-backup-restore-parser/xml-reference/">
+      
+      
+        <link rel="prev" href="../schema/">
+      
+      
+        <link rel="next" href="../reports/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+    
+    
+      
+        <title>XML Format Reference - SMS Backup & Restore Parser</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#xml-format-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SMS Backup &amp; Restore Parser" class="md-header__button md-logo" aria-label="SMS Backup & Restore Parser" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SMS Backup & Restore Parser
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              XML Format Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ShruggieTech/sms-backup-restore-parser" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../usage/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Usage
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../schema/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Schema Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  XML Format Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../reports/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Reports
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SMS Backup &amp; Restore Parser" class="md-nav__button md-logo" aria-label="SMS Backup & Restore Parser" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SMS Backup & Restore Parser
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ShruggieTech/sms-backup-restore-parser" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XML Format Reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XML Format Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structural-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sms-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SMS Fields
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mms-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Fields
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MMS Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mms-record-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Record Attributes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mms-part-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Part Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-mms-content-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common MMS Content Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mms-address-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Address Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#call-log-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call Log Fields
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enum-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enum Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Enum Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sms-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SMS Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sms-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SMS Status
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#smsmms-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SMS/MMS Read
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mms-message-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Message Box
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mms-address-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Address Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#call-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#call-presentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call Presentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#date-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Date Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Date Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#epoch-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Epoch Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#date-vs-date_sent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        date vs date_sent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#readable_date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        readable_date
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computed-date_iso-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computed date_iso Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#xsd-known-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XSD Known Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="XSD Known Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing Definitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-mismatches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type Mismatches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rcs-and-advanced-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RCS and Advanced Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup Encryption
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structural-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sms-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SMS Fields
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mms-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Fields
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MMS Fields">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mms-record-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Record Attributes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mms-part-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Part Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-mms-content-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common MMS Content Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mms-address-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Address Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#call-log-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call Log Fields
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enum-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enum Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Enum Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sms-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SMS Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sms-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SMS Status
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#smsmms-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SMS/MMS Read
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mms-message-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Message Box
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mms-address-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MMS Address Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#call-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call Type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#call-presentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call Presentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#date-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Date Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Date Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#epoch-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Epoch Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#date-vs-date_sent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        date vs date_sent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#readable_date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        readable_date
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#computed-date_iso-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Computed date_iso Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#xsd-known-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XSD Known Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="XSD Known Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing Definitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-mismatches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type Mismatches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rcs-and-advanced-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RCS and Advanced Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-encryption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup Encryption
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="xml-format-reference">XML Format Reference</h1>
+<p>Technical reference for the XML backup format produced by SyncTech's SMS Backup &amp; Restore Android application.</p>
+<p>This page documents the structure and fields of the XML backup files that the parser consumes. It covers SMS, MMS, and call log records, enum values, date handling conventions, and known issues with the upstream XSD schema.</p>
+<hr />
+<h2 id="file-structure">File Structure</h2>
+<p>SMS Backup &amp; Restore generates two distinct types of XML backup files:</p>
+<ul>
+<li><strong>Message backups</strong> contain both SMS and MMS records under a <code>&lt;smses&gt;</code> root element.</li>
+<li><strong>Call log backups</strong> contain call records under a <code>&lt;calls&gt;</code> root element.</li>
+</ul>
+<p>Messages and calls are always in separate files; they never appear in the same XML document.</p>
+<p><strong>Message backup skeleton:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&#39;1.0&#39; encoding=&#39;UTF-8&#39; standalone=&#39;yes&#39; ?&gt;</span>
+<span class="nt">&lt;smses</span><span class="w"> </span><span class="na">count=</span><span class="s">&quot;N&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;sms</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;mms</span><span class="w"> </span><span class="err">...</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;parts&gt;</span>
+<span class="w">      </span><span class="nt">&lt;part</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">      </span><span class="nt">&lt;part</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/parts&gt;</span>
+<span class="w">    </span><span class="nt">&lt;addrs&gt;</span>
+<span class="w">      </span><span class="nt">&lt;addr</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">      </span><span class="nt">&lt;addr</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/addrs&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/mms&gt;</span>
+<span class="w">  </span><span class="nt">&lt;sms</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="cm">&lt;!-- sms and mms elements may be interleaved freely --&gt;</span>
+<span class="nt">&lt;/smses&gt;</span>
+</code></pre></div>
+<p><strong>Call log backup skeleton:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&#39;1.0&#39; encoding=&#39;UTF-8&#39; standalone=&#39;yes&#39; ?&gt;</span>
+<span class="nt">&lt;calls</span><span class="w"> </span><span class="na">count=</span><span class="s">&quot;N&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;call</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;call</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/calls&gt;</span>
+</code></pre></div>
+<h3 id="structural-notes">Structural Notes</h3>
+<ul>
+<li>The <code>count</code> attribute on the root element reports the total number of child records in the file.</li>
+<li>Within <code>&lt;smses&gt;</code>, <code>&lt;sms&gt;</code> and <code>&lt;mms&gt;</code> elements appear in any order, interleaved chronologically rather than grouped by type.</li>
+<li>Each <code>&lt;mms&gt;</code> element contains a <code>&lt;parts&gt;</code> wrapper (with one or more <code>&lt;part&gt;</code> children) and may contain an <code>&lt;addrs&gt;</code> wrapper (with one or more <code>&lt;addr&gt;</code> children).</li>
+<li>File sizes for long-term users routinely reach hundreds of megabytes to multiple gigabytes, primarily driven by base64-encoded MMS media.</li>
+<li>The XML declaration specifies <code>encoding='UTF-8'</code>.</li>
+<li>When the app preference "Add XSL Tag" is enabled, the XML includes an <code>&lt;?xml-stylesheet?&gt;</code> processing instruction referencing <code>sms.xsl</code> or <code>calls.xsl</code>, allowing browser-based rendering.</li>
+<li>When "Add Readable Date" is enabled, <code>readable_date</code> and <code>contact_name</code> optional attributes are populated on each record.</li>
+</ul>
+<hr />
+<h2 id="sms-fields">SMS Fields</h2>
+<p>Each <code>&lt;sms&gt;</code> element is a self-closing tag whose entire payload is carried in XML attributes. There are no child elements.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>XSD Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valid Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>protocol</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Transport protocol identifier. Almost always <code>0</code> for standard SMS.</td>
+<td>Typically <code>0</code></td>
+</tr>
+<tr>
+<td><code>address</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Phone number of the sender or recipient. Format varies by carrier and locale (may include country code, spaces, dashes, or leading <code>+</code>).</td>
+<td>Phone number string</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td><code>xs:unsignedLong</code></td>
+<td>Yes</td>
+<td>Timestamp in Java epoch milliseconds. See <a href="#date-handling">Date Handling</a>.</td>
+<td>Millisecond epoch integer</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>Yes</td>
+<td>Message direction/disposition. See <a href="#sms-type">SMS Type</a>.</td>
+<td><code>1</code>–<code>6</code></td>
+</tr>
+<tr>
+<td><code>subject</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Message subject line. Rarely used for SMS; more common in MMS.</td>
+<td>Any string or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>body</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Message text content.</td>
+<td>Any string</td>
+</tr>
+<tr>
+<td><code>toa</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Type of Address. BCD encoding indicator for the address field.</td>
+<td>Typically <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>sc_toa</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Service Center Type of Address. BCD encoding indicator for the SMSC number.</td>
+<td>Typically <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>service_center</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>SMSC (Short Message Service Center) number that routed the message.</td>
+<td>Phone number string or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>read</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>Yes</td>
+<td>Read status. See <a href="#smsmms-read">SMS/MMS Read</a>.</td>
+<td><code>0</code> or <code>1</code></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td><code>xs:byte</code></td>
+<td>Yes</td>
+<td>Delivery status. See <a href="#sms-status">SMS Status</a>.</td>
+<td><code>-1</code>, <code>0</code>, <code>32</code>, <code>64</code></td>
+</tr>
+<tr>
+<td><code>locked</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Whether the message is locked (protected from deletion).</td>
+<td><code>0</code> = unlocked, <code>1</code> = locked</td>
+</tr>
+<tr>
+<td><code>date_sent</code></td>
+<td><code>xs:unsignedLong</code></td>
+<td>No</td>
+<td>Sender-side timestamp in Java epoch milliseconds. See <a href="#date-vs-date_sent">date vs date_sent</a>.</td>
+<td>Millisecond epoch integer or <code>0</code></td>
+</tr>
+<tr>
+<td><code>sub_id</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>SIM subscription ID. Identifies which SIM handled the message on dual-SIM devices.</td>
+<td>Index integer or full SIM ID string</td>
+</tr>
+<tr>
+<td><code>readable_date</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Human-friendly date rendering. Present only when enabled in backup preferences.</td>
+<td>Formatted date string</td>
+</tr>
+<tr>
+<td><code>contact_name</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Contact display name matched to the <code>address</code> field. Present only when enabled.</td>
+<td>Any string</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="mms-fields">MMS Fields</h2>
+<h3 id="mms-record-attributes">MMS Record Attributes</h3>
+<p>Each <code>&lt;mms&gt;</code> element carries its metadata as XML attributes. Additionally, it contains nested <code>&lt;parts&gt;</code> and (optionally) <code>&lt;addrs&gt;</code> child elements. The MMS attribute set is substantially larger than SMS, reflecting the complexity of the MMS protocol (OMA MMS Encapsulation).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>XSD Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valid Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>date</code></td>
+<td><code>xs:unsignedLong</code></td>
+<td>Yes</td>
+<td>Timestamp in Java epoch milliseconds.</td>
+<td>Millisecond epoch integer</td>
+</tr>
+<tr>
+<td><code>ct_t</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Content-Type of the MMS message.</td>
+<td>Typically <code>"application/vnd.wap.multipart.related"</code></td>
+</tr>
+<tr>
+<td><code>msg_box</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>Yes</td>
+<td>Message box (folder). See <a href="#mms-message-box">MMS Message Box</a>.</td>
+<td><code>1</code>–<code>4</code></td>
+</tr>
+<tr>
+<td><code>rr</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>Yes</td>
+<td>Read report request. <code>128</code> = requested, <code>129</code> = not requested.</td>
+<td><code>128</code> or <code>129</code></td>
+</tr>
+<tr>
+<td><code>read_status</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Read report status from the recipient side.</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><code>address</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Primary address (sender or recipient). On MMS, the XSD types this as <code>xs:long</code>, but real-world values contain phone number strings.</td>
+<td>Phone number string</td>
+</tr>
+<tr>
+<td><code>m_id</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Message ID assigned by the MMS gateway. Globally unique identifier for the MMS transaction.</td>
+<td>URI-style string</td>
+</tr>
+<tr>
+<td><code>read</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>Yes</td>
+<td>Local read status. See <a href="#smsmms-read">SMS/MMS Read</a>.</td>
+<td><code>0</code> or <code>1</code></td>
+</tr>
+<tr>
+<td><code>m_size</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Message size in bytes as reported by the gateway.</td>
+<td>Integer string</td>
+</tr>
+<tr>
+<td><code>m_type</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>Yes</td>
+<td>MMS message type (PDU type). <code>128</code> = send request, <code>132</code> = retrieve confirmation.</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><code>retr_st</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Retrieve status code. <code>0</code> usually indicates success.</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><code>ct_cls</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Content class.</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><code>sub_cs</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Subject character set (IANA number).</td>
+<td>Integer string</td>
+</tr>
+<tr>
+<td><code>ct_l</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Content-Location. URL from which the MMS content was retrieved.</td>
+<td>URL string</td>
+</tr>
+<tr>
+<td><code>tr_id</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Transaction ID for the MMS exchange.</td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>st</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Delivery status.</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><code>m_cls</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Message class (e.g., <code>"personal"</code>, <code>"advertisement"</code>).</td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>d_tm</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Delivery time.</td>
+<td>Epoch string</td>
+</tr>
+<tr>
+<td><code>retr_txt_cs</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Retrieve text character set.</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><code>d_rpt</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Delivery report requested. <code>128</code> = requested.</td>
+<td><code>128</code> or <code>129</code></td>
+</tr>
+<tr>
+<td><code>date_sent</code></td>
+<td><code>xs:unsignedLong</code></td>
+<td>No</td>
+<td>Sender-side timestamp. See <a href="#date-vs-date_sent">date vs date_sent</a>.</td>
+<td>Millisecond epoch integer or <code>0</code></td>
+</tr>
+<tr>
+<td><code>seen</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Whether the notification was seen.</td>
+<td><code>0</code> or <code>1</code></td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>MMS version.</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><code>exp</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Message expiry time.</td>
+<td>Epoch string</td>
+</tr>
+<tr>
+<td><code>pri</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Priority. <code>128</code> = low, <code>129</code> = normal, <code>130</code> = high.</td>
+<td><code>128</code>, <code>129</code>, or <code>130</code></td>
+</tr>
+<tr>
+<td><code>resp_txt</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Response text from the gateway.</td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>rpt_a</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Report allowed flag.</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><code>locked</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Locked status.</td>
+<td><code>0</code> or <code>1</code></td>
+</tr>
+<tr>
+<td><code>retr_txt</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Retrieve text.</td>
+<td>String</td>
+</tr>
+<tr>
+<td><code>resp_st</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Response status from the gateway.</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><code>text_only</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>No</td>
+<td>Whether the MMS contains only text parts (no media).</td>
+<td><code>0</code> or <code>1</code></td>
+</tr>
+<tr>
+<td><code>sub</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Message subject.</td>
+<td>Any string</td>
+</tr>
+<tr>
+<td><code>sub_id</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>SIM subscription ID.</td>
+<td>Index integer or full SIM ID string</td>
+</tr>
+<tr>
+<td><code>readable_date</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Human-friendly date rendering. Present only when enabled.</td>
+<td>Formatted date string</td>
+</tr>
+<tr>
+<td><code>contact_name</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Contact display name. Present only when enabled.</td>
+<td>Any string</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mms-part-fields">MMS Part Fields</h3>
+<p>Each <code>&lt;part&gt;</code> element inside <code>&lt;parts&gt;</code> represents one component of the MMS message. A typical MMS contains at least a SMIL layout part and one content part (text or media).</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>XSD Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valid Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>seq</code></td>
+<td><code>xs:byte</code></td>
+<td>Yes</td>
+<td>Sequence number controlling the display order of parts.</td>
+<td>Integer (starting from <code>-1</code> or <code>0</code>)</td>
+</tr>
+<tr>
+<td><code>ct</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>MIME content type of this part.</td>
+<td>MIME type string (e.g., <code>"text/plain"</code>, <code>"image/jpeg"</code>)</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Part name, often derived from the original filename.</td>
+<td>String or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>chset</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Character set as an IANA number (e.g., <code>"106"</code> for UTF-8).</td>
+<td>Integer string or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>cd</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Content-Disposition header value.</td>
+<td>String or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>fn</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Filename from content headers.</td>
+<td>String or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>cid</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Content-ID for referencing this part from SMIL layout.</td>
+<td>String or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>cl</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Content-Location identifier.</td>
+<td>String or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>ctt_s</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Content-Type start parameter. Identifies the root part of the multipart message.</td>
+<td>String or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>ctt_t</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Content-Type type parameter. Specifies the overall type of the multipart message.</td>
+<td>String or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>text</code></td>
+<td><code>xs:string</code></td>
+<td>Yes</td>
+<td>Text content of the part. Populated for <code>text/plain</code> parts; typically <code>"null"</code> for binary parts.</td>
+<td>Message text or <code>"null"</code></td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td><code>xs:string</code></td>
+<td>No</td>
+<td>Base64-encoded binary payload. Present for media parts (images, audio, video). This field is the primary driver of large file sizes in MMS backups.</td>
+<td>Base64 string</td>
+</tr>
+</tbody>
+</table>
+<h3 id="common-mms-content-types">Common MMS Content Types</h3>
+<table>
+<thead>
+<tr>
+<th>MIME Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>application/smil</code></td>
+<td>SMIL (Synchronized Multimedia Integration Language) layout descriptor controlling how MMS parts are presented. Nearly every MMS contains one.</td>
+</tr>
+<tr>
+<td><code>text/plain</code></td>
+<td>Plain text body of the message. The actual text is in the <code>text</code> attribute.</td>
+</tr>
+<tr>
+<td><code>image/jpeg</code></td>
+<td>JPEG photograph or image. Binary data in the <code>data</code> attribute.</td>
+</tr>
+<tr>
+<td><code>image/png</code></td>
+<td>PNG image. Binary data in the <code>data</code> attribute.</td>
+</tr>
+<tr>
+<td><code>image/gif</code></td>
+<td>GIF image (may be animated). Binary data in the <code>data</code> attribute.</td>
+</tr>
+<tr>
+<td><code>audio/mpeg</code></td>
+<td>MP3 or other MPEG audio. Binary data in the <code>data</code> attribute.</td>
+</tr>
+<tr>
+<td><code>audio/amr</code></td>
+<td>AMR audio recording, common for voice notes.</td>
+</tr>
+<tr>
+<td><code>video/mp4</code></td>
+<td>MP4 video. Binary data in the <code>data</code> attribute.</td>
+</tr>
+<tr>
+<td><code>video/3gpp</code></td>
+<td>3GPP video, commonly recorded on older Android devices.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mms-address-fields">MMS Address Fields</h3>
+<p>Each <code>&lt;addr&gt;</code> element inside <code>&lt;addrs&gt;</code> identifies one participant in the MMS conversation. Group MMS messages have multiple <code>&lt;addr&gt;</code> entries, one for each recipient and one for the sender.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>XSD Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valid Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>address</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Phone number or email address of this participant.</td>
+<td>Phone number or address string</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>integer</td>
+<td>Yes</td>
+<td>Role of this participant in the message. Values correspond to the PduHeaders constants in the Android telephony stack.</td>
+<td><code>129</code> = BCC, <code>130</code> = CC, <code>137</code> = From, <code>151</code> = To</td>
+</tr>
+<tr>
+<td><code>charset</code></td>
+<td>integer</td>
+<td>Yes</td>
+<td>Character set identifier for this address entry.</td>
+<td>Integer (e.g., <code>106</code> for UTF-8)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>&lt;addrs&gt;</code> wrapper and its <code>&lt;addr&gt;</code> children are present in real-world backup exports but are not defined in the official XSD schema published by SyncTech. Parsers should expect them to be present but not fail if they are absent.</p>
+</div>
+<hr />
+<h2 id="call-log-fields">Call Log Fields</h2>
+<p>Each <code>&lt;call&gt;</code> element represents one entry in the phone's call history. Like SMS, all data is carried in XML attributes with no child elements.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>XSD Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valid Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>number</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Phone number associated with the call. May include country code prefixes.</td>
+<td>Phone number string</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td>integer</td>
+<td>Yes</td>
+<td>Length of the call in seconds. <code>0</code> for missed or rejected calls.</td>
+<td>Non-negative integer</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td><code>xs:unsignedLong</code></td>
+<td>Yes</td>
+<td>Timestamp in Java epoch milliseconds. See <a href="#date-handling">Date Handling</a>.</td>
+<td>Millisecond epoch integer</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>integer</td>
+<td>Yes</td>
+<td>Call direction/disposition. See <a href="#call-type">Call Type</a>.</td>
+<td><code>1</code>–<code>6</code></td>
+</tr>
+<tr>
+<td><code>presentation</code></td>
+<td>integer</td>
+<td>Yes</td>
+<td>Caller ID presentation status. See <a href="#call-presentation">Call Presentation</a>.</td>
+<td><code>1</code>–<code>4</code></td>
+</tr>
+<tr>
+<td><code>subscription_id</code></td>
+<td>string</td>
+<td>No</td>
+<td>SIM subscription that handled the call. On dual-SIM devices, this distinguishes which line was used.</td>
+<td>Index integer or full SIM ID string</td>
+</tr>
+<tr>
+<td><code>readable_date</code></td>
+<td>string</td>
+<td>No</td>
+<td>Human-friendly date rendering. Present only when enabled in backup preferences.</td>
+<td>Formatted date string</td>
+</tr>
+<tr>
+<td><code>contact_name</code></td>
+<td>string</td>
+<td>No</td>
+<td>Contact display name matched to the <code>number</code> field. Present only when enabled.</td>
+<td>Any string</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Call logs use a separate <code>&lt;calls&gt;</code> root element and are stored in their own XML file. The official XSD only covers the <code>&lt;smses&gt;</code> root element. The <code>&lt;calls&gt;</code> structure is confirmed by the <code>calls.xsl</code> stylesheet distributed by SyncTech and by real-world backup files.</p>
+</div>
+<hr />
+<h2 id="enum-reference">Enum Reference</h2>
+<h3 id="sms-type">SMS Type</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1</code></td>
+<td>Received</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>Sent</td>
+</tr>
+<tr>
+<td><code>3</code></td>
+<td>Draft</td>
+</tr>
+<tr>
+<td><code>4</code></td>
+<td>Outbox</td>
+</tr>
+<tr>
+<td><code>5</code></td>
+<td>Failed</td>
+</tr>
+<tr>
+<td><code>6</code></td>
+<td>Queued</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sms-status">SMS Status</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-1</code></td>
+<td>None (no delivery status available)</td>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td>Complete (delivered successfully)</td>
+</tr>
+<tr>
+<td><code>32</code></td>
+<td>Pending (delivery in progress)</td>
+</tr>
+<tr>
+<td><code>64</code></td>
+<td>Failed (delivery failed)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="smsmms-read">SMS/MMS Read</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>Unread</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>Read</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mms-message-box">MMS Message Box</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1</code></td>
+<td>Received</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>Sent</td>
+</tr>
+<tr>
+<td><code>3</code></td>
+<td>Draft</td>
+</tr>
+<tr>
+<td><code>4</code></td>
+<td>Outbox</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mms-address-type">MMS Address Type</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>129</code></td>
+<td>BCC</td>
+</tr>
+<tr>
+<td><code>130</code></td>
+<td>CC</td>
+</tr>
+<tr>
+<td><code>137</code></td>
+<td>From</td>
+</tr>
+<tr>
+<td><code>151</code></td>
+<td>To</td>
+</tr>
+</tbody>
+</table>
+<h3 id="call-type">Call Type</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1</code></td>
+<td>Incoming</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>Outgoing</td>
+</tr>
+<tr>
+<td><code>3</code></td>
+<td>Missed</td>
+</tr>
+<tr>
+<td><code>4</code></td>
+<td>Voicemail</td>
+</tr>
+<tr>
+<td><code>5</code></td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td><code>6</code></td>
+<td>Refused List</td>
+</tr>
+</tbody>
+</table>
+<h3 id="call-presentation">Call Presentation</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1</code></td>
+<td>Allowed (caller ID visible)</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>Restricted (caller ID withheld)</td>
+</tr>
+<tr>
+<td><code>3</code></td>
+<td>Unknown</td>
+</tr>
+<tr>
+<td><code>4</code></td>
+<td>Payphone</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="date-handling">Date Handling</h2>
+<h3 id="epoch-format">Epoch Format</h3>
+<p>All timestamp fields (<code>date</code>, <code>date_sent</code>) use Java epoch milliseconds: the number of milliseconds elapsed since 1970-01-01 00:00:00 UTC.</p>
+<h3 id="conversion">Conversion</h3>
+<p>To obtain a standard Unix timestamp (seconds), divide by 1000:</p>
+<div class="highlight"><pre><span></span><code>unix_seconds = date_ms / 1000
+</code></pre></div>
+<p>To convert to an ISO 8601 string in Python:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">date_ms</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="n">iso_str</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+</code></pre></div>
+<p>In Excel, the formula <code>=(date_ms / 86400000) + 25569</code> converts to an Excel date serial number (format the cell as date/time afterward).</p>
+<h3 id="date-vs-date_sent">date vs date_sent</h3>
+<p>These are distinct fields serving different purposes:</p>
+<ul>
+<li><strong><code>date</code></strong> is the timestamp recorded by the local device. For received messages, this is when the message arrived. For sent messages, this is typically when the message was dispatched.</li>
+<li><strong><code>date_sent</code></strong> is the timestamp from the originating device or network. For received messages, this reflects when the sender actually sent it. The value may be <code>0</code> or absent if the network did not provide the information.</li>
+</ul>
+<h3 id="readable_date">readable_date</h3>
+<p>This optional field contains a locale-formatted date string generated at backup time. The format is controlled by the app's "Readable Date Format" setting and varies between users. Do not rely on this field for programmatic date operations; use the <code>date</code> epoch value instead.</p>
+<h3 id="computed-date_iso-field">Computed date_iso Field</h3>
+<p>The parser injects a computed <code>date_iso</code> field (ISO 8601, UTC) derived from the <code>date</code> attribute on every record. This is a convenience field for human readability and tooling interoperability. It is not present in the upstream XML. Injection is enabled by default and can be suppressed with the <code>--no-date-iso</code> CLI flag.</p>
+<hr />
+<h2 id="xsd-known-issues">XSD Known Issues</h2>
+<h3 id="missing-definitions">Missing Definitions</h3>
+<p>The official XSD does not define the <code>&lt;addrs&gt;</code> wrapper element or its <code>&lt;addr&gt;</code> children within <code>&lt;mms&gt;</code>. Despite this omission, the <code>&lt;addrs&gt;</code> structure is consistently present in real backup files. The addr type enum values (<code>129</code>, <code>130</code>, <code>137</code>, <code>151</code>) are documented in the official field reference and are supported by the parser.</p>
+<p>The XSD only describes the <code>&lt;smses&gt;</code> root element. Call log backups use a <code>&lt;calls&gt;</code> root element that is not covered by the XSD but is confirmed by the <code>calls.xsl</code> stylesheet and by real-world files.</p>
+<h3 id="type-mismatches">Type Mismatches</h3>
+<p>Several XSD type declarations are incorrect or overly restrictive compared to real-world data:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>XSD Type</th>
+<th>Actual Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MMS <code>address</code></td>
+<td><code>xs:long</code></td>
+<td>Contains phone number strings (including <code>+</code> prefixes and non-numeric characters).</td>
+</tr>
+<tr>
+<td>MMS <code>date_sent</code></td>
+<td><code>xs:unsignedByte</code></td>
+<td>Holds epoch millisecond values (large integers).</td>
+</tr>
+<tr>
+<td>Root <code>count</code></td>
+<td><code>xs:unsignedShort</code> (max 65,535)</td>
+<td>Backup files routinely contain far more records.</td>
+</tr>
+</tbody>
+</table>
+<p>All attribute values should be treated as strings with explicit type conversion rather than relying on the XSD type declarations.</p>
+<h3 id="rcs-and-advanced-messages">RCS and Advanced Messages</h3>
+<p>Newer versions of the app (v10.15.002+) support backing up RCS (Rich Communication Services) messages on selected devices, specifically those using Samsung Messages. These are stored within the same XML structure but may include additional attributes or edge cases not covered by the original schema.</p>
+<h3 id="backup-encryption">Backup Encryption</h3>
+<p>The Pro version of the app (v10.05.301+) can compress and encrypt backups using ZIP with AES-256 encryption. Encrypted backup files must be decrypted before XML parsing. The underlying XML format remains the same after decryption.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.instant", "search.highlight", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
