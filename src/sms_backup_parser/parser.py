@@ -318,13 +318,6 @@ def _parse_combined(input_path, output_dir, stem, strip_media,
     output_path = output_dir / f"{stem}.json"
     counts = {"sms": 0, "mms": 0, "call": 0}
 
-    # Map XML tags to combined section names
-    tag_to_section = {
-        "sms": "sms",
-        "mms": "mms",
-        "call": "calls",
-    }
-
     try:
         with CombinedJsonWriter(output_path, indent=indent) as writer:
             context = ET.iterparse(str(input_path), events=('end',))
@@ -404,7 +397,7 @@ def parse_backup_multi(input_paths, output_dir, strip_media=False,
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    stem = Path(input_paths[0]).stem
+    stem = "combined" if len(input_paths) > 1 else Path(input_paths[0]).stem
     output_path = output_dir / f"{stem}.json"
     total_counts = {"sms": 0, "mms": 0, "call": 0}
 

@@ -195,13 +195,13 @@ class TestParseMultiFileCombined:
         assert len(data["mms"]) == 1
         assert len(data["calls"]) == 1
 
-    def test_output_uses_first_file_stem(self, minimal_sms_xml, minimal_calls_xml, tmp_path):
+    def test_output_uses_combined_stem(self, minimal_sms_xml, minimal_calls_xml, tmp_path):
         from sms_backup_parser.parser import parse_backup_multi
         result = parse_backup_multi(
             [minimal_sms_xml, minimal_calls_xml], output_dir=tmp_path
         )
         from pathlib import Path
-        assert Path(result["output_files"][0]).stem == minimal_sms_xml.stem
+        assert Path(result["output_files"][0]).stem == "combined"
 
     def test_file_not_found_raises(self, minimal_sms_xml, tmp_path):
         from sms_backup_parser.parser import parse_backup_multi

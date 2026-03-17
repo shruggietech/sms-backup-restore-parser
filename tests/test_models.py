@@ -1,12 +1,12 @@
 """Tests for sms_backup_parser.models enum constants."""
 
 from sms_backup_parser.models import (
-    SMS_TYPES,
-    MMS_MSG_BOX,
-    CALL_TYPES,
     ADDR_TYPES,
+    CALL_TYPES,
+    MMS_MSG_BOX,
     PRESENTATION_TYPES,
     SMS_STATUS,
+    SMS_TYPES,
 )
 
 

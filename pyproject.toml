@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sms-backup-restore-parser"
-version = "0.1.1"
+version = "0.1.3"
 description = "CLI utility for parsing SyncTech SMS Backup & Restore XML exports into structured JSON with built-in analytical reports."
 requires-python = ">=3.12"
 license = "Apache-2.0"
@@ -28,7 +28,7 @@ Changelog = "https://github.com/shruggietech/sms-backup-restore-parser/blob/main
 sms-backup-parser = "sms_backup_parser.cli:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0"]
+dev = ["pytest>=8.0", "ruff>=0.9"]
 validate = ["jsonschema>=4.20"]
 docs = [
     "mkdocs>=1.6",
@@ -40,3 +40,13 @@ testpaths = ["tests"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["sms_backup_parser"]

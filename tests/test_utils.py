@@ -1,6 +1,6 @@
 """Tests for sms_backup_parser.utils."""
 
-from sms_backup_parser.utils import java_epoch_to_iso, format_file_size
+from sms_backup_parser.utils import format_file_size, java_epoch_to_iso
 
 
 class TestJavaEpochToIso:

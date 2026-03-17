@@ -209,12 +209,12 @@ def build_parser():
     report_parser.add_argument(
         "--top-n",
         type=int,
-        default=20,
+        default=0,
         metavar="N",
         help=(
             "Number of entries to include in ranked reports such as 'contacts'. "
             "For example, --top-n 50 shows the top 50 contacts by volume. "
-            "(default: 20)"
+            "0 means all contacts. (default: 0 = all)"
         ),
     )
 
@@ -383,31 +383,71 @@ def cmd_report(args):
         )
         return 2
 
-    # Determine output destination
-    if args.output is None or args.output == "-":
-        output_file = sys.stdout
-        should_close = False
-    else:
+    # Determine verbosity
+    verbosity = 0 if args.quiet else (2 if args.verbose else 1)
+
+    # Warn on format / file-extension mismatch
+    _FORMAT_EXTENSIONS = {"text": ".txt", "csv": ".csv", "json": ".json"}
+    if args.output and args.output != "-":
+        expected_ext = _FORMAT_EXTENSIONS.get(args.output_format, "")
+        actual_ext = Path(args.output).suffix.lower()
+        if expected_ext and actual_ext and actual_ext != expected_ext:
+            print(
+                f"Warning: Output format '{args.output_format}' does not match "
+                f"file extension '{actual_ext}' (expected '{expected_ext}')",
+                file=sys.stderr,
+            )
+
+    data = reports.load_report_data(input_paths)
+    result = reports.generate_report(
+        data,
+        report_type=args.type,
+        output_format=args.output_format,
+        top_n=args.top_n,
+    )
+
+    # result is always dict[str, str]
+    writing_to_file = args.output is not None and args.output != "-"
+
+    if writing_to_file and len(result) > 1:
+        # Multiple report types → separate files
+        base = Path(args.output)
+        base.parent.mkdir(parents=True, exist_ok=True)
+        for report_name, content in result.items():
+            out_path = base.parent / f"{base.stem}_{report_name}{base.suffix}"
+            newline = "" if args.output_format == "csv" else None
+            with open(out_path, "w", encoding="utf-8", newline=newline) as f:
+                f.write(content)
+                if not content.endswith("\n"):
+                    f.write("\n")
+            if verbosity >= 2:
+                print(f"  Wrote: {out_path}", file=sys.stderr)
+        return 0
+
+    if writing_to_file:
+        # Single report type → write to exact path
         output_path = Path(args.output)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_file = open(output_path, 'w', encoding='utf-8')
-        should_close = True
-
-    try:
-        data = reports.load_report_data(input_paths)
-        result = reports.generate_report(
-            data,
-            report_type=args.type,
-            output_format=args.output_format,
-            top_n=args.top_n,
-        )
-        output_file.write(result)
-        if not result.endswith('\n'):
-            output_file.write('\n')
+        content = next(iter(result.values()))
+        newline = "" if args.output_format == "csv" else None
+        with open(output_path, "w", encoding="utf-8", newline=newline) as f:
+            f.write(content)
+            if not content.endswith("\n"):
+                f.write("\n")
+        if verbosity >= 2:
+            print(f"  Wrote: {output_path}", file=sys.stderr)
         return 0
-    finally:
-        if should_close:
-            output_file.close()
+
+    # stdout — concatenate sections
+    if len(result) > 1:
+        separator = "\n\n" if args.output_format == "text" else "\n"
+        combined = separator.join(result.values())
+    else:
+        combined = next(iter(result.values()))
+    sys.stdout.write(combined)
+    if not combined.endswith("\n"):
+        sys.stdout.write("\n")
+    return 0
 
 
 def cmd_version(args):

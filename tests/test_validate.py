@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from sms_backup_parser.validate import validate_output, SCHEMA_PATH
+from sms_backup_parser.validate import SCHEMA_PATH, validate_output
 
 
 class TestSchemaDiscovery:

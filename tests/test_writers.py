@@ -2,9 +2,7 @@
 
 import json
 
-import pytest
-
-from sms_backup_parser.parser import JsonArrayWriter, CombinedJsonWriter
+from sms_backup_parser.parser import CombinedJsonWriter, JsonArrayWriter
 
 
 def _load_json(path):
@@ -17,7 +15,7 @@ class TestJsonArrayWriter:
 
     def test_empty_array(self, tmp_path):
         path = tmp_path / "empty.json"
-        with JsonArrayWriter(path) as w:
+        with JsonArrayWriter(path):
             pass
         data = _load_json(path)
         assert data == []
@@ -71,7 +69,7 @@ class TestCombinedJsonWriter:
 
     def test_empty_combined(self, tmp_path):
         path = tmp_path / "empty_combined.json"
-        with CombinedJsonWriter(path) as w:
+        with CombinedJsonWriter(path):
             pass
         data = _load_json(path)
         assert data == {"sms": [], "mms": [], "calls": []}

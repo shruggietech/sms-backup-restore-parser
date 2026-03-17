@@ -5,8 +5,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
 
@@ -156,3 +154,95 @@ class TestCliCompactFlag:
         assert len(json_files) >= 1
         content = json_files[0].read_text(encoding='utf-8')
         assert "    " not in content
+
+
+# ── Report subcommand tests ─────────────────────────────────────────────
+
+
+def _parse_to_json(tmp_path):
+    """Parse mixed.xml into combined JSON for report tests."""
+    xml = str(FIXTURES_DIR / "mixed.xml")
+    run_cli("parse", xml, "-o", str(tmp_path), "--combined")
+    json_files = list(tmp_path.glob("*.json"))
+    assert len(json_files) == 1
+    return str(json_files[0])
+
+
+class TestCliReportSingleType:
+    """Single report type writes one file to the exact specified path."""
+
+    def test_summary_to_file(self, tmp_path):
+        json_path = _parse_to_json(tmp_path)
+        out = tmp_path / "report.txt"
+        result = run_cli("report", json_path, "-t", "summary", "-o", str(out))
+        assert result.returncode == 0
+        assert out.exists()
+
+    def test_csv_single_no_double_newlines(self, tmp_path):
+        json_path = _parse_to_json(tmp_path)
+        out = tmp_path / "report.csv"
+        result = run_cli("report", json_path, "-t", "summary", "--format", "csv", "-o", str(out))
+        assert result.returncode == 0
+        content = out.read_bytes()
+        assert b"\r\r" not in content
+
+
+class TestCliReportAll:
+    """-t all -o <path> creates three separate output files."""
+
+    def test_creates_three_files(self, tmp_path):
+        json_path = _parse_to_json(tmp_path)
+        out = tmp_path / "report.csv"
+        result = run_cli("report", json_path, "-t", "all", "--format", "csv", "-o", str(out))
+        assert result.returncode == 0
+        expected = {"report_summary.csv", "report_contacts.csv", "report_timeline.csv"}
+        created = {f.name for f in tmp_path.glob("report_*.csv")}
+        assert expected == created
+
+    def test_all_stdout(self, tmp_path):
+        json_path = _parse_to_json(tmp_path)
+        result = run_cli("report", json_path, "-t", "all", "--format", "text")
+        assert result.returncode == 0
+        assert "Backup Summary" in result.stdout
+        assert "Contacts Report" in result.stdout
+        assert "Timeline Report" in result.stdout
+
+
+class TestCliReportFormatMismatchWarning:
+    """Mismatched --format and file extension emits a warning."""
+
+    def test_csv_format_json_extension_warns(self, tmp_path):
+        json_path = _parse_to_json(tmp_path)
+        out = tmp_path / "report.json"
+        result = run_cli("report", json_path, "-t", "summary", "--format", "csv", "-o", str(out))
+        assert result.returncode == 0
+        assert "Warning" in result.stderr
+        assert ".csv" in result.stderr
+
+    def test_matching_extension_no_warning(self, tmp_path):
+        json_path = _parse_to_json(tmp_path)
+        out = tmp_path / "report.csv"
+        result = run_cli("report", json_path, "-t", "summary", "--format", "csv", "-o", str(out))
+        assert result.returncode == 0
+        assert "Warning" not in result.stderr
+
+
+class TestCliMultiFileCombinedNaming:
+    """Multi-file --combined uses 'combined' stem instead of input name."""
+
+    def test_combined_stem(self, tmp_path):
+        sms = str(FIXTURES_DIR / "minimal_sms.xml")
+        calls = str(FIXTURES_DIR / "minimal_calls.xml")
+        result = run_cli("parse", sms, calls, "-o", str(tmp_path), "--combined")
+        assert result.returncode == 0
+        json_files = list(tmp_path.glob("*.json"))
+        assert len(json_files) == 1
+        assert json_files[0].stem == "combined"
+
+    def test_single_file_keeps_input_stem(self, tmp_path):
+        sms = str(FIXTURES_DIR / "minimal_sms.xml")
+        result = run_cli("parse", sms, "-o", str(tmp_path), "--combined")
+        assert result.returncode == 0
+        json_files = list(tmp_path.glob("*.json"))
+        assert len(json_files) == 1
+        assert json_files[0].stem == "minimal_sms"

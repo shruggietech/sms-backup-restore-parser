@@ -357,7 +357,9 @@ def generate_contacts(data, output_format="text", top_n=20):
             + e["calls_incoming"] + e["calls_outgoing"] + e["calls_missed"]
         )
 
-    sorted_contacts = sorted(contacts.items(), key=_total_activity, reverse=True)[:top_n]
+    sorted_contacts = sorted(contacts.items(), key=_total_activity, reverse=True)
+    if top_n > 0:
+        sorted_contacts = sorted_contacts[:top_n]
 
     rows = []
     for addr, e in sorted_contacts:
@@ -543,25 +545,23 @@ def _timeline_to_csv(rows):
 _REPORT_GENERATORS = {
     "summary": lambda data, fmt, **kw: generate_summary(data, output_format=fmt),
     "contacts": lambda data, fmt, **kw: generate_contacts(
-        data, output_format=fmt, top_n=kw.get("top_n", 20)
+        data, output_format=fmt, top_n=kw.get("top_n", 0)
     ),
     "timeline": lambda data, fmt, **kw: generate_timeline(data, output_format=fmt),
 }
 
 
-def generate_report(data, report_type="summary", output_format="text", top_n=20):
+def generate_report(data, report_type="summary", output_format="text", top_n=0):
     """Generate one or all report types.
 
-    If report_type is 'all', concatenate all reports with separators.
+    Always returns a dict[str, str] keyed by report type name.
+    Single report types return a one-entry dict; 'all' returns three entries.
     """
     if report_type == "all":
-        parts = []
-        for name in ("summary", "contacts", "timeline"):
-            parts.append(
-                _REPORT_GENERATORS[name](data, output_format, top_n=top_n)
-            )
-        separator = "\n\n" if output_format == "text" else "\n"
-        return separator.join(parts)
+        return {
+            name: _REPORT_GENERATORS[name](data, output_format, top_n=top_n)
+            for name in ("summary", "contacts", "timeline")
+        }
 
     generator = _REPORT_GENERATORS.get(report_type)
     if generator is None:
@@ -569,4 +569,4 @@ def generate_report(data, report_type="summary", output_format="text", top_n=20)
             f"Unknown report type: {report_type!r}. "
             f"Valid types: {', '.join(sorted(_REPORT_GENERATORS))} or 'all'."
         )
-    return generator(data, output_format, top_n=top_n)
+    return {report_type: generator(data, output_format, top_n=top_n)}
