@@ -17,6 +17,10 @@ When upstream docs and the local schema conflict, defer to the local schema. Upd
 
 ```
 .
+├── .github/
+│   ├── copilot-instructions.md         # GitHub Copilot context
+│   └── workflows/
+│       └── docs.yml                   # MkDocs → GitHub Pages deployment
 ├── CLAUDE.md                          # Claude Code instructions
 ├── LICENSE                            # Apache License 2.0
 ├── CHANGELOG.md                       # Change log — update with every meaningful change

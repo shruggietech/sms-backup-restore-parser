@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ## `[Unreleased]`
 
 ### Added
+- **CI: GitHub Actions docs deployment workflow** — New `.github/workflows/docs.yml` auto-builds and deploys the MkDocs site to GitHub Pages on pushes to `main` that modify `docs/`, `mkdocs.yml`, or `CHANGELOG.md`. Matches shruggie-indexer convention.
 - **Docs: XML Format Reference page** — New `docs/xml-reference.md` presenting the upstream XML backup format documentation for end users. Spec: §15.2.
 - **Docs: Changelog page** — New `docs/changelog.md` synchronized from the root `CHANGELOG.md`. Spec: §15.3.
 - Project scaffolding: src/ layout, pyproject.toml, LICENSE, CHANGELOG
