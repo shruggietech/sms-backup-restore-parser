@@ -6,10 +6,10 @@
 | Project Slug | `sms-backup-restore-parser` |
 | Repository | [github.com/shruggietech/sms-backup-restore-parser](https://github.com/shruggietech/sms-backup-restore-parser) |
 | License | [Apache License v2.0](https://www.apache.org/licenses/LICENSE-2.0) |
-| Version | Pre-release (0.1.0 target) |
+| Version | 0.1.0 |
 | Author | William Thompson (ShruggieTech LLC) |
 | Latest Revision Date | 2026-03-17 |
-| Document Status | DRAFT |
+| Document Status | v0.1.0 |
 | Audience | AI-first, Human-second |
 
 <a name="table-of-contents" id="table-of-contents"></a>

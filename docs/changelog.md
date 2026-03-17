@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [0.1.0] - 2026-03-17
+
 ### Added
 - **CI: GitHub Actions docs deployment workflow** — New `.github/workflows/docs.yml` auto-builds and deploys the MkDocs site to GitHub Pages on pushes to `main` that modify `docs/`, `mkdocs.yml`, or `CHANGELOG.md`. Matches shruggie-indexer convention.
 - **Docs: XML Format Reference page** — New `docs/xml-reference.md` presenting the upstream XML backup format documentation for end users. Spec: §15.2.
@@ -42,3 +46,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Fixed
 - **pyproject.toml**: Moved `classifiers` from under `[project.urls]` to `[project]` where it belongs (was causing `pip install -e` to fail)
 - Combined JSON output (`--combined`) now correctly handles interleaved record types (e.g., SMS-MMS-SMS) by buffering each section independently
+
+[Unreleased]: https://github.com/shruggietech/sms-backup-restore-parser/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/shruggietech/sms-backup-restore-parser/releases/tag/v0.1.0
