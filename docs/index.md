@@ -22,4 +22,6 @@ It also generates built-in analytical reports -- summary statistics, per-contact
 - [Installation](installation.md) -- download binaries, install from source, or set up a development environment
 - [Usage](usage.md) -- complete CLI reference with flags, examples, and common workflows
 - [Schema Reference](schema.md) -- field-by-field documentation of the JSON output format
+- [XML Format Reference](xml-reference.md) -- technical reference for the upstream XML backup format
 - [Reports](reports.md) -- description of each report type with example output
+- [Changelog](changelog.md) -- release history and notable changes

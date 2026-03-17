@@ -49,6 +49,12 @@ source .venv/bin/activate   # .venv\Scripts\activate on Windows
 pip install -e ".[dev]"
 ```
 
+To install the documentation toolchain (MkDocs and Material for MkDocs):
+
+```bash
+pip install -e ".[docs]"
+```
+
 ### Running Tests
 
 ```bash

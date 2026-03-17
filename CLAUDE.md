@@ -48,8 +48,15 @@ When upstream docs and the local schema conflict, defer to the local schema. Upd
 ├── scripts/
 │   └── build.py                       # PyInstaller build script
 ├── docs/                              # MkDocs documentation (GitHub Pages)
+│   ├── index.md                       # Site landing page
+│   ├── installation.md                # Installation guide
+│   ├── usage.md                       # CLI usage reference
+│   ├── schema.md                      # JSON Schema reference
+│   ├── xml-reference.md               # Upstream XML format reference
+│   ├── reports.md                     # Report types documentation
+│   └── changelog.md                   # Synced copy of root CHANGELOG.md
 ├── reference/
-│   ├── knowledge-base.md              # Distilled technical reference — safe for VCS
+│   ├── knowledge-base.md              # Technical specification — safe for VCS
 │   ├── SyncTech-docs/                 # PDFs etc. — DO NOT COMMIT, delete after KB is built
 │   └── SyncTech-utilities/            # Utilities — DO NOT COMMIT, delete after KB is built
 └── ...
