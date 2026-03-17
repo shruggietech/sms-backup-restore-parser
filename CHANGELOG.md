@@ -29,6 +29,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 - Normalized `repo_url` casing in `mkdocs.yml` to match canonical GitHub URL
+- **pyproject.toml**: Added `docs` optional dependency group (`mkdocs>=1.6`, `mkdocs-material>=9.5`) for documentation toolchain
 
 ### Fixed
+- **pyproject.toml**: Moved `classifiers` from under `[project.urls]` to `[project]` where it belongs (was causing `pip install -e` to fail)
 - Combined JSON output (`--combined`) now correctly handles interleaved record types (e.g., SMS-MMS-SMS) by buffering each section independently
