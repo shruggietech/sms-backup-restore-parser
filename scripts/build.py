@@ -16,7 +16,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DIST_DIR = PROJECT_ROOT / "dist"
 SRC_DIR = PROJECT_ROOT / "src"
 SCHEMA_FILE = PROJECT_ROOT / "sms-backup-restore.schema.json"
-ENTRY_POINT = SRC_DIR / "sms_backup_parser" / "cli.py"
+ENTRY_POINT = SRC_DIR / "sms_backup_parser" / "__main__.py"
 
 
 def build():
