@@ -1,11 +1,28 @@
 site_name: SMS Backup & Restore Parser
 site_description: CLI utility for parsing SyncTech SMS Backup & Restore XML exports
-repo_url: https://github.com/shruggietech/sms-backup-restore-parser
+site_url: https://shruggietech.github.io/sms-backup-restore-parser/
+repo_url: https://github.com/ShruggieTech/sms-backup-restore-parser
+
 theme:
   name: material
+  palette:
+    scheme: slate
+  features:
+    - navigation.tabs
+    - navigation.instant
+    - search.highlight
+    - content.tabs.link
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
 nav:
   - Home: index.md
   - Installation: installation.md
   - Usage: usage.md
   - Schema Reference: schema.md
+  - XML Format Reference: xml-reference.md
   - Reports: reports.md
+  - Changelog: changelog.md

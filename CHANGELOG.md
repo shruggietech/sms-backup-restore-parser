@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Changed
 - Normalized `repo_url` casing in `mkdocs.yml` to match canonical GitHub URL
 - **pyproject.toml**: Added `docs` optional dependency group (`mkdocs>=1.6`, `mkdocs-material>=9.5`) for documentation toolchain
+- **Docs: MkDocs configuration alignment** — Updated `mkdocs.yml` with slate theme, navigation tabs/instant, search highlighting, content tabs, admonition/superfences extensions, `site_url`, and nav entries for XML Format Reference and Changelog pages
 
 ### Fixed
 - **pyproject.toml**: Moved `classifiers` from under `[project.urls]` to `[project]` where it belongs (was causing `pip install -e` to fail)
