@@ -1,5 +1,11 @@
 # SMS Backup & Restore Parser
 
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue?logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green?logo=apache)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.3-orange)](CHANGELOG.md)
+[![Documentation](https://img.shields.io/github/actions/workflow/status/shruggietech/sms-backup-restore-parser/docs.yml?label=docs&logo=materialformkdocs&logoColor=white)](https://shruggietech.github.io/sms-backup-restore-parser/)
+[![Code Style: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
 CLI utility for parsing [SyncTech SMS Backup & Restore](https://www.synctech.com.au/sms-backup-restore/) XML exports into structured JSON and generating analytical reports.
 
 ## Features
