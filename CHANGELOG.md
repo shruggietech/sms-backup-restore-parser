@@ -76,6 +76,7 @@ _No unreleased changes._
 - **pyproject.toml**: Moved `classifiers` from under `[project.urls]` to `[project]` where it belongs (was causing `pip install -e` to fail)
 - Combined JSON output (`--combined`) now correctly handles interleaved record types (e.g., SMS-MMS-SMS) by buffering each section independently
 
-[Unreleased]: https://github.com/shruggietech/sms-backup-restore-parser/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/shruggietech/sms-backup-restore-parser/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/shruggietech/sms-backup-restore-parser/compare/v0.1.1...v0.1.3
 [0.1.1]: https://github.com/shruggietech/sms-backup-restore-parser/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/shruggietech/sms-backup-restore-parser/releases/tag/v0.1.0
