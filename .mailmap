@@ -1,0 +1,8 @@
+# .mailmap — Canonical author identity mapping
+# See https://git-scm.com/docs/gitmailmap
+#
+# Maps all commit identities to the canonical project author.
+
+William Thompson <h8rt3rmin8r@gmail.com> h8rt3rmin8r <shruggietech@users.noreply.github.com>
+William Thompson <h8rt3rmin8r@gmail.com> William Thompson <william@shruggie.tech>
+William Thompson <h8rt3rmin8r@gmail.com> William Thompson <shruggietech@users.noreply.github.com>
